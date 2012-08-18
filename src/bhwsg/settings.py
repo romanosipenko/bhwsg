@@ -6,6 +6,10 @@ PUBLIC_DIR = os.path.join(PROJECT_PATH, 'public')
 
 sys.path.insert(0, os.path.join(PROJECT_PATH, 'bhwsg', 'apps'))
 
+
+BHWSG_SMTP_SERVER = "127.0.0.1"
+BHWSG_SMTP_PORT = 1025
+
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
