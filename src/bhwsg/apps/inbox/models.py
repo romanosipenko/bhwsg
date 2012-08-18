@@ -3,16 +3,19 @@ from django.contrib.auth.models import User
 
 
 class Inbox(models.Model):
-    login = models.CharField(max_length=255, unique=True,
-        help_text="SMTP login/Permalink")
+    slug = models.CharField("SMTP login/Permalink", max_length=255, unique=True,)
     password = models.CharField(max_length=255)
     users = models.ManyToManyField(User, related_name='inboxes')
 
     class Meta:
-        ordering = ('login',)
+        ordering = ('slug',)
 
     def __unicode__(self):
         return self.title
+
+    @property
+    def login(self):
+        return self.slug
 
 
 class Mail(models.Model):
