@@ -1,0 +1,62 @@
+@import "r.css";
+body {
+  font: normal 1em/1.5 sans-serif;
+}
+ul {
+  list-style: none;
+}
+#primary,
+#secondary,
+#mail {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+#primary {
+  background: #ddd;
+  left: 0;
+  width: 5em;
+}
+#primary li.active {
+  background: #fafafa;
+}
+#secondary {
+  background: #fafafa;
+  left: 5em;
+  width: 12em;
+  border-right: 1px solid #aaa;
+  z-index: 2;
+}
+#secondary li.active {
+  background: #859356;
+  padding: .25em;
+  color: #fff;
+}
+#mail {
+  background: #fafafa url(../i/bg4.png);
+  left: 17em;
+  right: 0;
+  overflow: auto;
+}
+#mail h1 {
+  font-size: 2em;
+  padding: .125em .5em;
+  font-weight: 100;
+  letter-spacing: -1px;
+  border-bottom: 1px solid #ddd;
+  background: #d5dbc1;
+}
+#mail aside {
+  padding: .5em 1em;
+  background: #eee;
+}
+#mail .mail {
+  margin: 2em;
+  background: #fff;
+  border-radius: .25em;
+  overflow: hidden;
+  box-shadow: 0 0 2px #777;
+}
+#mail .message {
+  padding: 1em;
+}

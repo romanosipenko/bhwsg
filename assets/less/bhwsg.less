@@ -1,0 +1,80 @@
+@import "r.css";
+
+// Base
+body {
+	font: normal 1em/1.5 sans-serif;
+}
+
+ul {
+	list-style: none;
+}
+
+@primary-width: 5em;
+@secondary-width: 12em;
+@secondary-left: @primary-width;
+@mail-left: @primary-width + @secondary-width;
+
+// Layout
+#primary, #secondary, #mail {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+}
+
+#primary {
+	background: #ddd;
+	left: 0;
+	width: @primary-width;
+
+	li.active {
+		background: #fafafa;
+	}
+}
+
+#secondary {
+	background: #fafafa;
+	left: @secondary-left;
+	width: @secondary-width;
+	border-right: 1px solid #aaa;
+	z-index: 2;
+
+	li.active {
+		background: #859356; //debug
+		padding: .25em;
+		color: #fff;
+	}
+}
+
+#mail {
+	background: #fafafa url(../i/bg4.png);
+	left: @mail-left;
+	right: 0;
+	overflow: auto;
+
+	h1 {
+		font-size: 2em;
+		padding: .125em .5em;
+		// margin: 1em 1em 0 1em;
+		font-weight: 100;
+		letter-spacing: -1px;
+		border-bottom: 1px solid #ddd; // debug
+		background: lighten(#859356, 35%); //debug
+		}
+
+	aside {
+		// margin: 0 2em 0 2em;
+		padding: .5em 1em;
+		background: #eee;
+	}
+
+	.mail {
+		margin:  2em;
+		background: #fff; //debug
+		border-radius: .25em;
+		overflow: hidden;
+		box-shadow: 0 0 2px #777;
+	}
+	.message {
+		padding: 1em;
+	}
+}
