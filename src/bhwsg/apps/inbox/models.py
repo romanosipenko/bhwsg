@@ -9,7 +9,7 @@ class Inbox(models.Model):
     slug = models.CharField("SMTP login/Permalink", max_length=255, unique=True, blank=True, null=True)
     password = models.CharField(max_length=255)
     users = models.ManyToManyField(User, related_name='inboxes')
-    
+
     class Meta:
         ordering = ('slug',)
         unique_together = ('title', 'label')
@@ -25,17 +25,17 @@ class Inbox(models.Model):
     @property
     def full_title(self):
         return u"%s %s" % (self.title, self.label)
-    
+
     @property
     def login(self):
         return self.slug
-        
+
     def get_rules(self):
         """ Get inbox rules """
-        
+
         rules = list(ForwardRule.objects.filter(inbox=self))
         return rules
-    
+
 
 class InboxSettings(models.Model):
     inbox = models.ForeignKey(Inbox, related_name="settings")
@@ -84,7 +84,7 @@ class DeleteRule(Rule):
     def apply(self):
         pass
 
-        
+
 class Mail(models.Model):
     inbox = models.ForeignKey(Inbox, related_name="mails")
     readers = models.ManyToManyField(User, related_name="mails")
@@ -111,7 +111,7 @@ class Mail(models.Model):
         return u'Mail for %s' % self.inbox
 
     def readed(self):
-        return True if self.readers.all().exists() else False
+        return self.readers.all().exists()
 
     def readed_by_all(self):
-        return True if self.readers.all() == self.inbox.users.all() else False
+        return self.readers.all() == self.inbox.users.all()
