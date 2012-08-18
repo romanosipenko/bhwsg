@@ -93,9 +93,11 @@ INSTALLED_APPS = (
 
     # Plugins
     'registration',
+    'south',
 
     # Apps
     'core',
+    'inbox',
 )
 
 LOGGING = {
