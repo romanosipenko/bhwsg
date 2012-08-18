@@ -11,6 +11,7 @@
 .buildpath
 .project
 .settings
+.pydevproject
 atlassian-ide-plugin.xml
 
 # Project
