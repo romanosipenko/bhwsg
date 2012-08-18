@@ -65,7 +65,7 @@ ROOT_URLCONF = 'bhwsg.urls'
 WSGI_APPLICATION = 'bhwsg.wsgi.application'
 
 TEMPLATE_DIRS = (
-    os.path.join(PROJECT_PATH, 'templates'),
+    os.path.join(PROJECT_PATH, 'bhwsg', 'templates'),
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
