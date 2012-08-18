@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.template.defaultfilters import slugify
+from django.template.defaultfilters import slugify, striptags, truncatewords_html
 
 
 class Inbox(models.Model):
@@ -115,3 +115,7 @@ class Mail(models.Model):
 
     def readed_by_all(self):
         return self.readers.all() == self.inbox.users.all()
+
+    @property
+    def few_lines(self):
+        return striptags(truncatewords_html(self.message, 20))
