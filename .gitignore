@@ -17,4 +17,4 @@ atlassian-ide-plugin.xml
 /src/bhwsg/local_settings.py
 /src/bhwsg/public/static
 /src/bhwsg/public/media
-/src/logs/bhwsg.log
+*.log
