@@ -1,6 +1,5 @@
 django>=1.4
 psycopg2
-django-registration
 south
 django-annoying
 django-celery>=2.4.2,<=3.0.4

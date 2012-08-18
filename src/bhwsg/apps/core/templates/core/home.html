@@ -6,9 +6,6 @@
     Hi, {{ user.username }}? You are logged in.
     <a href="{% url auth_logout %}">Logout</a>.<br/><br/>
   {% else %}
-    <ul>
-      <li><a href="{% url auth_login %}">Login</a></li>
-      <li><a href="{% url registration_register %}">Registration</a></li>
-    </ul>
+    <a href="{% url auth_login %}">Login</a>
   {% endif %}
 {% endblock content %}

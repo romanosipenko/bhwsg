@@ -103,7 +103,6 @@ INSTALLED_APPS = (
     'django.contrib.admin',
 
     # Plugins
-    'registration',
     'south',
     'djcelery',
 
