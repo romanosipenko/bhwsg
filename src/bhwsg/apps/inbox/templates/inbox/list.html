@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <a href="{% url home %}">back</a>
+  <p>
+    EMAIL_HOST = '127.0.0.1'<br />
+    EMAIL_HOST_USER = '{{ inbox.slug }}'<br />
+    EMAIL_HOST_PASSWORD = '{{ inbox.password }}'<br />
+    EMAIL_PORT = 2525
+  </p>
+  <p>Inbox for {{ inbox }}:</p>
+  <ul>
+    {% for mail in inbox.mails.all %}
+      <li>{{ mail.subject }} - {{ mail.to_email }}<br />
+        {{ mail.get_html|safe }}
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock content %}

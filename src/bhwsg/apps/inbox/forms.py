@@ -1,3 +1,4 @@
+import uuid
 from django import forms
 from django.forms.models import inlineformset_factory
 
@@ -14,6 +15,7 @@ class InboxCreateForm(forms.ModelForm):
         super(InboxCreateForm, self).__init__(*args, **kwargs)
 
     def save(self, *args, **kwargs):
+        self.instance.password = uuid.uuid4()
         self.instance.owner = self.owner
         return super(InboxCreateForm, self).save(*args, **kwargs)
 

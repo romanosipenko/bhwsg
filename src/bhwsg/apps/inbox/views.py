@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 
+from models import Inbox
 from forms import InboxCreateForm
 
 
@@ -17,3 +18,9 @@ def inbox_create(request):
             'inbox_form': form,
         }
         return render(request, 'core/home.html', context)
+
+
+@login_required
+def inbox_mails_list(request, slug):
+    inbox = get_object_or_404(Inbox, slug=slug)
+    return render(request, 'inbox/list.html', {'inbox': inbox, })

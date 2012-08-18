@@ -18,10 +18,14 @@ class Inbox(models.Model):
 
     class Meta:
         ordering = ('slug',)
-        unique_together = ('title', 'label')
+        unique_together = (('title', 'label'),)
 
     def __unicode__(self):
         return self.title
+
+    @models.permalink
+    def get_absolute_url(self):
+        return 'inbox-mails-list', (self.slug,)
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -30,7 +34,7 @@ class Inbox(models.Model):
 
     @property
     def full_title(self):
-        return u"%s %s" % (self.title, self.label)
+        return u"%s %s" % (self.title, self.label or "")
 
     @property
     def login(self):
@@ -111,34 +115,34 @@ class Mail(models.Model):
     uuid = models.CharField(max_length=255, blank=True, null=True)
     date = models.DateTimeField(blank=True, null=True,
         help_text="The local time and date when the message was written.")
-    
+
     # All content types of letter
     content_types = JSONField(blank=True, null=True)
-    
-    @memoize_method
-    def get_parser(self): 
-        return MailParser(self.raw)
-    
-    def has_html(self):
-        return TEXT_HTML_CONTENT_TYPE in self.content_types
-    
-    def has_text(self):
-        return TEXT_PLAIN_CONTENT_TYPE in self.content_types
-    
-    def has_attachments(self):
-        pass
-    
-    def get_html(self):
-        return self.get_parser().get_text()
-    
-    def get_text(self):
-        return self.get_parser().get_html()
-    
-    def get_attachments(self):
-        pass    
-    
+
     def __unicode__(self):
         return u'Mail for %s' % self.inbox
+
+    @memoize_method
+    def get_parser(self):
+        return MailParser(self.raw)
+
+    def has_html(self):
+        return TEXT_HTML_CONTENT_TYPE in self.content_types
+
+    def has_text(self):
+        return TEXT_PLAIN_CONTENT_TYPE in self.content_types
+
+    def has_attachments(self):
+        pass
+
+    def get_html(self):
+        return self.get_parser().get_text()
+
+    def get_text(self):
+        return self.get_parser().get_html()
+
+    def get_attachments(self):
+        pass
 
     def readed(self):
         return self.readers.all().exists()

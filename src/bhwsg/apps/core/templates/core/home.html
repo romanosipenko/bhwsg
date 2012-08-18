@@ -11,7 +11,7 @@
     {% if user.inboxes.exists %}
       <ul>
         {% for inbox in user.inboxes.all %}
-          <li>{{ inbox.title }}</li>
+          <li><a href="{{ inbox.get_absolute_url }}">{{ inbox.title }}</a></li>
         {% endfor %}
       </ul>
     {% endif %}
