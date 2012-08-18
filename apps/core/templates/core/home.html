@@ -2,4 +2,13 @@
 
 {% block content %}
   <p>Home page!</p>
+  {% if user.is_authenticated %}
+    Hi, {{ user.username }}? You are logged in.
+    <a href="{% url auth_logout %}">Logout</a>.<br/><br/>
+  {% else %}
+    <ul>
+      <li><a href="{% url auth_login %}">Login</a></li>
+      <li><a href="{% url registration_register %}">Registration</a></li>
+    </ul>
+  {% endif %}
 {% endblock content %}

@@ -126,6 +126,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
 
     # Plugins
+    'registration',
 
     # Apps
     'apps.core',
@@ -158,6 +159,10 @@ LOGGING = {
             'propagate': True,
         },
     }
+}
+
+ABSOLUTE_URL_OVERRIDES = {
+    'auth.user': lambda o: "/",
 }
 
 try:
