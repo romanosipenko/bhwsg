@@ -38,15 +38,12 @@ class InboxSettings(models.Model):
         return []
 
     def apply(self, mail):
-        # Apply settings to certain mail
+        """Apply settings to certain mail"""
         raise NotImplemented()
 
 
 class Rule(InboxSettings):
     mask = models.CharField(max_length=255, blank=True, null=True)
-
-    is_directly = models.BooleanField(default=True)
-    period = models.PositiveSmallIntegerField(blank=True, null=True)
 
     class Meta:
         abstract = True
@@ -64,6 +61,20 @@ class ForwardRule(Rule):
 
 
 class DeleteRule(Rule):
+    kind = 'deleterule'
+
+    NOT_READED = 0
+    READED = 1
+    READED_BY_ALL = 2
+    READED_CHOICES = (
+        (NOT_READED, "All"),
+        (READED, "Readed"),
+        (READED_BY_ALL, "Readed by all"),
+    )
+    period = models.PositiveSmallIntegerField(blank=True, null=True)
+    readed = models.PositiveSmallIntegerField(blank=True, null=True,
+        choices=READED_CHOICES)
+
     def apply(self):
         pass
 
@@ -92,3 +103,9 @@ class Mail(models.Model):
 
     def __unicode__(self):
         return u'Mail for %s' % self.inbox
+
+    def readed(self):
+        return True if self.readers.all().exists() else False
+
+    def readed_by_all(self):
+        return True if self.readers.all() == self.inbox.users.all() else False
