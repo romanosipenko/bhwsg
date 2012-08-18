@@ -1,6 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify, striptags, truncatewords_html
+ango.template.defaultfilters import slugify
+from core.fields import JSONField
+from core.utils import memoize_method
+from core.parsers import MailParser, TEXT_PLAIN_CONTENT_TYPE,\
+    TEXT_HTML_CONTENT_TYPE
 
 
 class Inbox(models.Model):
@@ -102,11 +107,35 @@ class Mail(models.Model):
     raw = models.TextField(blank=True, null=True)
     subject = models.TextField(max_length=255, blank=True, null=True,
         help_text="A brief summary of the topic of the message.")
-    message = models.TextField(blank=True, null=True)
     uuid = models.CharField(max_length=255, blank=True, null=True)
     date = models.DateTimeField(blank=True, null=True,
         help_text="The local time and date when the message was written.")
-
+    
+    # All content types of letter
+    content_types = JSONField(blank=True, null=True)
+    
+    @memoize_method
+    def get_parser(self): 
+        return MailParser(self.raw)
+    
+    def has_html(self):
+        return TEXT_HTML_CONTENT_TYPE in self.content_types
+    
+    def has_text(self):
+        return TEXT_PLAIN_CONTENT_TYPE in self.content_types
+    
+    def has_attachments(self):
+        pass
+    
+    def get_html(self):
+        return self.get_parser().get_text()
+    
+    def get_text(self):
+        return self.get_parser().get_html()
+    
+    def get_attachments(self):
+        pass    
+    
     def __unicode__(self):
         return u'Mail for %s' % self.inbox
 
