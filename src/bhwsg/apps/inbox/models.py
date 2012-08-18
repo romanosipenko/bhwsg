@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify, striptags, truncatewords_html
-ango.template.defaultfilters import slugify
 from core.fields import JSONField
 from core.utils import memoize_method
 from core.parsers import MailParser, TEXT_PLAIN_CONTENT_TYPE,\
