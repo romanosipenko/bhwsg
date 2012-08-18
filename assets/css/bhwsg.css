@@ -23,18 +23,94 @@ ul {
 #secondary {
   background: #fafafa;
   left: 5em;
-  width: 12em;
+  width: 20em;
   border-right: 1px solid #aaa;
   z-index: 2;
+  overflow-y: auto;
+}
+#secondary h1 {
+  font-size: 2em;
+  font-weight: 100;
+  letter-spacing: -1px;
+  text-align: left;
+  position: relative;
+  padding: .25em .5em;
+  text-shadow: 0 -1px 1px #eeeeee;
+}
+#secondary h1 .counters {
+  position: absolute;
+  right: .5em;
+  top: 2em;
+  font-size: 0.35em;
+  background: #ddd;
+  letter-spacing: 0;
+  border-radius: .25em;
+  overflow: hidden;
+}
+#secondary h1 .counters .counter {
+  padding: .25em .75em;
+}
+#secondary h1 .counters .single {
+  border-radius: .25em;
+}
+#secondary h1 .counters .unread {
+  border-radius: .25em 0 0 .25em;
+  background: #e43c36;
+  color: #fff;
+}
+#secondary li {
+  padding: .25em .5em .5em;
+  border-bottom: 1px solid #ddd;
+  position: relative;
+}
+#secondary li h2 {
+  font-size: 1em;
+  font-weight: 100;
+  letter-spacing: -1px;
+  position: relative;
+}
+#secondary li h2:hover {
+  z-index: 3;
+}
+#secondary li time {
+  position: absolute;
+  top: .5em;
+  right: .5em;
+  font-size: .75em;
+  font-weight: 100;
+}
+#secondary li p.header {
+  font-size: .8em;
+}
+#secondary li p.header .label {
+  background: #999;
+  color: #fff;
+  border-radius: .25em;
+  margin-right: .5em;
+  padding: .125em .25em;
+  font-size: .95em;
+}
+#secondary li p.few-lines {
+  font-size: .7em;
+  line-height: 1.25;
+  height: 2.45em;
+  overflow: hidden;
+  color: #555;
 }
 #secondary li.active {
   background: #859356;
-  padding: .25em;
+  box-shadow: 0 0 10px #555 inset;
   color: #fff;
+}
+#secondary li.active p.header .label {
+  background: #59633a;
+}
+#secondary li.active p.few-lines {
+  color: #eee;
 }
 #mail {
   background: #fafafa url(../i/bg4.png);
-  left: 17em;
+  left: 25em;
   right: 0;
   overflow: auto;
 }
@@ -53,7 +129,7 @@ ul {
 #mail .mail {
   margin: 2em;
   background: #fff;
-  border-radius: .25em;
+  border-radius: 2px;
   overflow: hidden;
   box-shadow: 0 0 2px #777;
 }
