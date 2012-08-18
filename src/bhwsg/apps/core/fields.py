@@ -73,6 +73,6 @@ class JSONField(models.TextField):
 
 try:
     from south.modelsinspector import add_introspection_rules
-    add_introspection_rules([], ["^apps\.defaults\.fields\.JSONField"])
+    add_introspection_rules([], ["^core\.fields\.JSONField"])
 except ImportError:
     pass
