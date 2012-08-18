@@ -26,6 +26,9 @@ ul {
   width: 20em;
   border-right: 1px solid #aaa;
   z-index: 2;
+  overflow: hidden;
+}
+#secondary:hover {
   overflow-y: auto;
 }
 #secondary h1 {
@@ -107,6 +110,16 @@ ul {
 }
 #secondary li.active p.few-lines {
   color: #eee;
+}
+#scroller {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: .5em;
+  background: #000;
+  z-index: 100;
+  opacity: .01;
+  cursor: w-resize;
 }
 #mail {
   background: #fafafa url(../i/bg4.png);

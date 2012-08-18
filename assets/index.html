@@ -122,5 +122,90 @@
 			</div>
 		</article>
 	</section>
+	<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js"></script>
+	<script>
+		/* PlugTrade.com - jQuery draggit Function */
+/* Drag A Div with jQuery */
+/* http://stackoverflow.com/questions/561844/how-to-move-div-with-the-mouse-using-jquery */
+jQuery.fn.draggit = function (el) {
+    var thisdiv = this;
+    var thistarget = $(el);
+    var ismousedown = false;
+    var relX;
+    var relY;
+    var targetw = thistarget.width();
+    var targeth = thistarget.height();
+    var docw;
+    var doch;
+
+    thistarget.css('position','absolute');
+
+
+    thisdiv.bind('mousedown', function(e){
+        var pos = $(el).offset();
+        var srcX = pos.left;
+        var srcY = pos.top;
+
+        docw = $('body').width();
+        doch = $('body').height();
+
+        relX = e.pageX - srcX;
+        relY = e.pageY - srcY;
+
+        ismousedown = true;
+    });
+
+    $(document).bind('mousemove',function(e){
+        if(ismousedown)
+        {
+            targetw = thistarget.width();
+            targeth = thistarget.height();
+
+            var maxX = docw - targetw - 10;
+            var maxY = doch - targeth - 10;
+
+            var mouseX = e.pageX;
+            var mouseY = e.pageY;
+
+            var diffX = mouseX - relX;
+            var diffY = mouseY - relY;
+
+            // check if we are beyond document bounds ...
+            if(diffX < 0)   diffX = 0;
+            if(diffY < 0)   diffY = 0;
+            if(diffX > maxX) diffX = maxX;
+            if(diffY > maxY) diffY = maxY;
+
+            $(el).css('top', (diffY)+'px');
+            $(el).css('left', (diffX)+'px');
+        }
+    });
+
+    $(window).bind('mouseup', function(e){
+        ismousedown = false;
+    });
+
+    return this;
+} // end jQuery draggit function //
+
+
+		var sec = $("#secondary");
+		var mail = $("#mail");
+		var scroller = $("<div id='scroller'></div>");
+		$("body").append(scroller);
+		scroller.css("left", sec.offset().left + sec.outerWidth());
+
+		$("#scroller").draggit("#scroller");
+
+		$("#scroller").mousemove(function(){
+			var this_left = parseInt($(this).css("left"), 10);
+			console.log(this_left);
+			sec.width(this_left - parseInt(sec.css("left"), 10));
+			mail.css("left", this_left);
+			// console.log(sec_width);
+			return true;
+		})
+
+	</script>
 </body>
 </html>
