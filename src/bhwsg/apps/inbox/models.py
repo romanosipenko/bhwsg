@@ -10,9 +10,11 @@ from core.parsers import MailParser, TEXT_PLAIN_CONTENT_TYPE,\
 class Inbox(models.Model):
     title = models.CharField(max_length=50)
     label = models.CharField(max_length=10, blank=True, null=True)
-    slug = models.CharField("SMTP login/Permalink", max_length=255, unique=True, blank=True, null=True)
+    slug = models.SlugField("SMTP login/Permalink", max_length=255, unique=True,
+        blank=True, null=True)
     password = models.CharField(max_length=255)
     users = models.ManyToManyField(User, related_name='inboxes')
+    owner = models.ForeignKey(User, related_name='owned_inboxes', blank=True, null=True)
 
     class Meta:
         ordering = ('slug',)

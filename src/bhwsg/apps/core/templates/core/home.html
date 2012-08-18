@@ -3,7 +3,18 @@
 {% block content %}
   <p>Home page!</p>
   {% if user.is_authenticated %}
-    Hi, {{ user.username }}? You are logged in.
+    Hi, {{ user.username }}. You are logged in.
+    <form action="{% url inbox-create %}" method="POST">{% csrf_token %}
+        {{ inbox_form.as_p }}
+        <input type="submit" value="save">
+    </form>
+    {% if user.inboxes.exists %}
+      <ul>
+        {% for inbox in user.inboxes.all %}
+          <li>{{ inbox.title }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
     <a href="{% url auth_logout %}">Logout</a>.<br/><br/>
   {% else %}
     <a href="{% url auth_login %}">Login</a>

@@ -1,9 +1,15 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 
+from inbox.forms import InboxCreateForm
+
 
 def home(request):
-    return render(request, 'core/home.html')
+    inbox_form = InboxCreateForm()
+    context = {
+        'inbox_form': inbox_form
+    }
+    return render(request, 'core/home.html', context)
 
 
 def login_user(request):
