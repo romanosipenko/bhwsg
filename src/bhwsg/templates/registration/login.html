@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Authorization</h1>
+
+{% if user.is_authenticated %}
+  Hi, {{ user.username }}? You are logged in.
+  <a href="{% url auth_logout %}">Logout</a>.<br/><br/>
+{% else %}
+  {% if form.non_field_errors %}
+    {{ form.non_field_errors }}
+  {% endif %}
+
+<form method="post" action="{% url auth_login %}?next={% url home %}">{% csrf_token %}
+  <dl class="register">
+  {% for field in form %}
+    <dt>{{ field.label_tag }}</dt>
+    <dd class="clearfix">{{ field }}
+    {% if field.help_text %}<div class="clearfix">{{ field.help_text }}</div>{% endif %}
+    {% if field.errors %}<div class="myerrors clearfix">{{ field.errors }}</div>{% endif %}
+    </dd>
+  {% endfor %}
+  </dl>
+  <input type="submit" value="Вход" / class="clearfix">
+</form>
+
+<script type="text/javascript">
+  document.getElementById('id_username').focus()
+</script>
+<ul>
+  <li><a href="{% url registration_register %}">Registration</a></li>
+</ul>
+{% endif %}
+{% endblock %}
