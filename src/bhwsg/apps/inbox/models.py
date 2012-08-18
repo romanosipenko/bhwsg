@@ -18,13 +18,13 @@ class Inbox(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
-        if not self.login:
-            self.login = slugify(self.full_title)
+        if not self.slug:
+            self.slug = slugify(self.full_title)
         super(Inbox, self).save(*args, **kwargs)
 
     @property
     def full_title(self):
-        return u"%s %s" % (self.title, self.lable)
+        return u"%s %s" % (self.title, self.label)
 
     @property
     def login(self):
