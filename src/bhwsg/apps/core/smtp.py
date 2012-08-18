@@ -1,4 +1,3 @@
-from tasks import handle_mail
 import smtpd
 import datetime
 import time
@@ -10,23 +9,32 @@ import socket
 import logging
 import asynchat
 import errno
+from annoying.functions import get_object_or_None
+
+from tasks import handle_mail
+from inbox.models import Inbox
+
 __version__ = 'BHWSGSMTP proxy version 0.1'
 
+
 class BHWSGSMTPCredintailsValidator(object):
-    
+    """
+        Check inbox by given credintails
+    """
     def __init__(self):
-        self.project = None
+        self.inbox = None
         self.password = None
         self.valid = False
     
-    def _validate(self):
-        # TODO: check access
-        return True
+    def _validate(self, username, password):
+        # Get inbox, using credintails
+        inbox = get_object_or_None(Inbox, slug=username, password=password)
+        return True if inbox else False 
     
     def validate(self, username, password):
         self.valid = self._validate()
         if self.valid:
-            self.project = username
+            self.inbox = username
             self.password = password
             
         return self.valid 
@@ -43,16 +51,15 @@ class BHWSGSMTPServer(smtpd.SMTPServer):
         if self.credential_validator.valid:
             mail_dict = {
                 'peer': peer,
-                'from': mailfrom,
-                'to': rcpttos,
-                'message': data,
+                'from_email': mailfrom,
+                'to_email': rcpttos,
+                'raw': data,
                 'uuid': str(uuid1()),
                 'date': datetime.datetime.now(),
-                'project': self.credential_validator.project
-                
+                'inbox': self.credential_validator.inbox
             }
-            
-            handle_mail.delay(mail_dict)
+            # Save mail to db in celery task
+            save_mail.delay(mail_dict)
             
     
     def handle_accept(self):
