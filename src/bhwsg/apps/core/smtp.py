@@ -48,6 +48,9 @@ class BHWSGSMTPServer(smtpd.SMTPServer):
         self.credential_validator = BHWSGSMTPCredintailsValidator()
         
     def process_message(self, peer, mailfrom, rcpttos, data):
+        print 'process'
+        print self.credential_validator.__dict__
+        
         if self.credential_validator.valid:
             mail_dict = {
                 'peer': peer,

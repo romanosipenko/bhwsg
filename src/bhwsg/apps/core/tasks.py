@@ -19,7 +19,7 @@ def handle_mail(mail_dict):
         
         mail = Mail.objects.create(
             inbox=inbox,
-            content_types=parser.get_content_types()
+            content_types=parser.get_content_types(),
             **mail_dict
         )
         for rule in inbox.get_rules():

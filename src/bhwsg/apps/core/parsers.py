@@ -11,7 +11,7 @@ class MailParser(object):
         self._mail = email.message_from_string(mail.encode('utf-8'))
     
     def get_content_types(self):
-        return set(item.get_content_type() for item in self._mail.walk())
+        return list(set(item.get_content_type() for item in self._mail.walk()))
     
     def get_attachments(self):
         pass
