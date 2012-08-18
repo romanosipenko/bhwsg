@@ -1,17 +1,30 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.template.defaultfilters import slugify
 
 
 class Inbox(models.Model):
-    slug = models.CharField("SMTP login/Permalink", max_length=255, unique=True,)
+    title = models.CharField(max_length=50)
+    label = models.CharField(max_length=10, blank=True, null=True)
+    slug = models.CharField("SMTP login/Permalink", max_length=255, unique=True, blank=True, null=True)
     password = models.CharField(max_length=255)
     users = models.ManyToManyField(User, related_name='inboxes')
 
     class Meta:
         ordering = ('slug',)
+        unique_together = ('title', 'label')
 
     def __unicode__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.login:
+            self.login = slugify(self.full_title)
+        super(Inbox, self).save(*args, **kwargs)
+
+    @property
+    def full_title(self):
+        return u"%s %s" % (self.title, self.lable)
 
     @property
     def login(self):
