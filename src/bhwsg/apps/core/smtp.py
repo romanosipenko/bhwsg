@@ -32,7 +32,7 @@ class BHWSGSMTPCredintailsValidator(object):
         return True if inbox else False 
     
     def validate(self, username, password):
-        self.valid = self._validate()
+        self.valid = self._validate(username, password)
         if self.valid:
             self.inbox = username
             self.password = password
@@ -59,7 +59,7 @@ class BHWSGSMTPServer(smtpd.SMTPServer):
                 'inbox': self.credential_validator.inbox
             }
             # Save mail to db in celery task
-            save_mail.delay(mail_dict)
+            handle_mail.delay(mail_dict)
             
     
     def handle_accept(self):

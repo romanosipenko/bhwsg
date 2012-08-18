@@ -15,7 +15,7 @@ def handle_mail(mail_dict):
     
     if inbox:
         mail = Mail.objects.create(inbox=inbox, **mail_dict)
-        for rule in inbox.get_rules(mail):
+        for rule in inbox.get_rules():
             try:
                 rule.apply(mail)
             except Exception, e:
