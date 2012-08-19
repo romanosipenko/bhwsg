@@ -30,6 +30,7 @@ class InboxList(JsonView):
             'label': None,
             'slug': '/',
             'url': reverse('inbox-mail-list'),
+            'config': reverse('inbox-settings'),
             'count': reduce(lambda x, y: x + y, [inbox['count'] for inbox in response])\
                 if response else 0,
             'unread': reduce(lambda x, y: x + y, [inbox['unread'] for inbox in response])\
