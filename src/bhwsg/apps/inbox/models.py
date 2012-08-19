@@ -1,14 +1,20 @@
+import os
+import logging
+import  fnmatch
+import re
 from django.db import models
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify, striptags, truncatewords_html
+from django.core.files.base import ContentFile
+from django.conf import settings
+from django.core.mail import send_mail
+
 from core.fields import JSONField
 from core.utils import memoize_method
 from core.parsers import MailParser, TEXT_PLAIN_CONTENT_TYPE,\
     TEXT_HTML_CONTENT_TYPE
 
-from django.core.mail import send_mail
-import  fnmatch
-import re
+logger = logging.getLogger('inbox')
 
 
 class Inbox(models.Model):
@@ -46,7 +52,7 @@ class Inbox(models.Model):
 
     def get_settings(self):
         """ Get inbox settings """
-        return self.settings.all()
+        return self.settings.all()    
 
 
 class InboxSettings(models.Model):
@@ -120,7 +126,38 @@ class DeleteRule(InboxSettings):
         pass
 
 
+class MailManager(models.Manager):
+    def new_mail(self, inbox, raw_data):
+        """
+            Add new mail
+        """
+        parser = Mail.parser(raw_data['raw'])
+        
+        mail = self.create(
+            inbox=inbox,
+            content_types=parser.get_content_types(),
+            **raw_data
+        )
+        
+        # Save attacments
+        MailAttachment.objects.bulk_create(
+            [MailAttachment(mail=mail, file=ContentFile(ac, name=n))\
+                for n, ac in parser.get_attachements()]
+        )
+        # Apply rules          
+        for settings in inbox.get_settings():
+            try:
+                settings.get_correct_rule().apply(mail)
+            except Exception, e:
+                logger.error('Rule execution failed: %s' % e)                       
+
+                
+
 class Mail(models.Model):
+    parser = MailParser
+    
+    mail = models.ForeignKey()
+    file
     inbox = models.ForeignKey(Inbox, related_name="mails")
     readers = models.ManyToManyField(User, related_name="mails")
     peer = models.CharField(max_length=255, blank=True, null=True)
@@ -143,14 +180,17 @@ class Mail(models.Model):
 
     # All content types of letter
     content_types = JSONField(blank=True, null=True)
-
+    
+    objects = MailManager()
+    
     def __unicode__(self):
         return u'Mail for %s' % self.inbox
 
+    
     @memoize_method
-    def get_parser(self):
-        return MailParser(self.raw)
-
+    def get_parser(self): 
+        return self.parser(self.raw)
+    
     def has_html(self):
         return TEXT_HTML_CONTENT_TYPE in self.content_types
 
@@ -178,3 +218,14 @@ class Mail(models.Model):
     @property
     def few_lines(self):
         return striptags(truncatewords_html(self.message, 20))
+
+
+def get_attachment_upload_path(instance, name):
+    name = name.encode('utf-8')
+    
+    return os.path.join(settings.MEDIA_ROOT, 'attachments', name)
+     
+
+class MailAttachment(models.Model):
+    mail = models.ForeignKey(Mail)
+    file = models.FileField(upload_to=get_attachment_upload_path)

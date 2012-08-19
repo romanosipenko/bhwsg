@@ -14,8 +14,11 @@ class MailParser(object):
         return list(set(item.get_content_type() for item in self._mail.walk()))
     
     def get_attachments(self):
-        pass
-    
+        for item in self._mail.walk():
+            name = item.get_filename()
+            if name:
+                yield (name, item.get_payload(decode=True))         
+            
     def get_content_type(self):
         return self._mail['Content-Type']
     

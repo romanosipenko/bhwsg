@@ -16,15 +16,5 @@ def handle_mail(mail_dict):
     inbox = get_object_or_None(Inbox, slug=mail_dict.pop('inbox'))
 
     if inbox:
-        parser = MailParser(mail_dict['raw'])
+        Mail.objects.new_mail(inbox, mail_dict)    
 
-        mail = Mail.objects.create(
-            inbox=inbox,
-            content_types=parser.get_content_types(),
-            **mail_dict
-        )
-        for settings in inbox.get_settings():
-            try:
-                settings.get_correct_rule().apply(mail)
-            except Exception, e:
-                logger.error('Rule execution failed: %s' % e)
