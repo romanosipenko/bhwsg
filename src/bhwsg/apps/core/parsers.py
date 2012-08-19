@@ -7,14 +7,14 @@ TEXT_HTML_CONTENT_TYPE = "text/html"
 
 class MailParser(object):
     """ Parse raw email and get some of it parts. """
-    
+
     contenttype_scoredict = {TEXT_PLAIN_CONTENT_TYPE: 1.0, TEXT_HTML_CONTENT_TYPE: 0.5}
 
     def __init__(self, mail):
         # TODO: Correct encoding
         try:
             mail = mail.encode('utf-8')
-        except Exception, e:
+        except Exception:
             pass
         self._mail = email.message_from_string(mail)
 

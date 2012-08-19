@@ -9,7 +9,6 @@ from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify, striptags, truncatewords_html
 from django.core.files.base import ContentFile
 from django.core.mail import send_mail
-from django.utils.encoding import smart_unicode
 
 from core.fields import JSONField
 from core.utils import memoize_method

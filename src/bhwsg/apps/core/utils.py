@@ -36,7 +36,7 @@ def generate_username(email):
     while True:
         i += 1
         yield "%s%d" % (username, i)
-        
+
 
 def get_object_or_None(klass, *args, **kwargs):
     """

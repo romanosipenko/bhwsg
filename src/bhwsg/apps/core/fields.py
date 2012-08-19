@@ -6,6 +6,7 @@ from django.forms.util import ValidationError as FormValidationError
 
 from utils import json
 
+
 # Taken from somewhere
 class JSONFormField(Field):
     def clean(self, value):
