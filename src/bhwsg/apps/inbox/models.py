@@ -8,7 +8,6 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify, striptags, truncatewords_html
 from django.core.files.base import ContentFile
-from django.conf import settings
 from django.core.mail import send_mail
 
 from core.fields import JSONField
@@ -199,11 +198,11 @@ class MailManager(models.Manager):
         queryset = self.get_query_set().filter(inbox=inbox)
         queryset = queryset.prefetch_related('readers').order_by('-date')
         return queryset
-    
+
     def get_mail(self, user, **kwargs):
         queryset = self.get_query_set().filter(inbox__users=user)
         queryset = queryset.prefetch_related('readers')
-        
+
         return get_object_or_None(queryset, **kwargs)
 
 

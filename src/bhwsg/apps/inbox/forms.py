@@ -73,7 +73,10 @@ class UserCreateForm(forms.ModelForm):
     def save(self, *args, **kwargs):
         email = self.cleaned_data['email']
         user = self.existing_user(email)
-        if not user:
+        if user:
+            # send
+            pass
+        else:
             for username in generate_username(email):
                 try:
                     sid = transaction.savepoint()
@@ -83,5 +86,6 @@ class UserCreateForm(forms.ModelForm):
                 except IntegrityError:
                     transaction.savepoint_rollback(sid)
                 else:
+                    # send
                     break
         return user
