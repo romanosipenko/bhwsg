@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <p>Create new inbox:</p>
+  <form action="{% url inbox-create %}" method="POST">{% csrf_token %}
+    {{ inbox_form.as_p }}
+    <input type="submit" value="create">
+  </form>
+  {% if user.inboxes.exists %}
+    <p>All my inboxes:</p>
+    <ol>
+      {% for inbox in user.inboxes.all %}
+        <li><a href="{{ inbox.get_absolute_url }}">{{ inbox }}</a></li>
+      {% endfor %}
+    </ol>
+  {% endif %}
+{% endblock content %}

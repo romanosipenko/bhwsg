@@ -27,8 +27,10 @@ class InboxList(JsonView):
             'label': None,
             'slug': '/',
             'url': reverse('inbox-mail-list'),
-            'count': reduce(lambda x, y: x + y, [inbox['count'] for inbox in response]),
-            'unread': reduce(lambda x, y: x + y, [inbox['unread'] for inbox in response]),
+            'count': reduce(lambda x, y: x + y, [inbox['count'] for inbox in response])\
+                if response else 0,
+            'unread': reduce(lambda x, y: x + y, [inbox['unread'] for inbox in response])\
+                if response else 0,
             'users': list(set(itertools.chain.from_iterable([inbox['users'] for inbox in response]))),
         })
         return {'inboxes': response}
@@ -96,6 +98,15 @@ class MailView(JsonView):
 
 
 @login_required
+def inbox_settings(request):
+    inbox_form = InboxCreateForm()
+    context = {
+        'inbox_form': inbox_form
+    }
+    return render(request, 'inbox/settings.html', context)
+
+
+@login_required
 def inbox_create(request):
     form = InboxCreateForm(request.POST or None, owner=request.user)
     if request.method == "POST":
@@ -154,7 +165,7 @@ def inbox_team_add(request, slug):
 
 
 @login_required
-def inbox_team_remove_me(request, slug):
+def inbox_leave(request, slug):
     inbox = get_object_or_404(Inbox, slug=slug)
     if request.user in inbox.users.all():
         inbox.users.remove(request.user)
