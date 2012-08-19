@@ -150,6 +150,23 @@ var BHWSG = (function(){
         }, // templates
 
         // Renders
+
+        _render: function(template, data, el, callback) {
+            console.log("Template is: ");
+            console.log(template);
+            console.log("Data is: ");
+            console.log(data);
+            console.log("El is: ");
+            console.log(el);
+            var html = $.mustache(template, data);
+            el = $(el);
+            if (el.length){el.html(html);}
+            if (typeof(callback) === "function") {
+                callback();
+            }
+            if (!!!el.length){return html;}
+        },
+
         renderInboxes: function(data){
             var html = $.mustache(BHWSG.templates.inboxes, data);
             BHWSG.layout.primary.find("ul").html(html);
@@ -182,17 +199,31 @@ var BHWSG = (function(){
             $.getJSON("/inbox/list/", function(data){
                 if (data.status === 200){
                     console.log("Status is OK, will render...");
-                    BHWSG.renderInboxes(data.data);
+                    // BHWSG.renderInboxes(data.data);
+                    //
+                    BHWSG._render(
+                        BHWSG.templates.inboxes, // template
+                        data.data, // data
+                        BHWSG.layout.primary.find("ul"), // el
+                        BHWSG.actionInbox // callback
+                        );
                 }
                 else {
                     alert("Status: " + data.status + " Message: " + data.message);
                 }
             });
         }, // fetchInboxes
+
         fetchMails: function(slug){
             $.getJSON("/inbox/mail_list/" + slug + "/", function(data){
                 if (data.status === 200){
                     BHWSG.renderMails(data.data);
+                    BHWSG._render(
+                        BHWSG.templates.mails,
+                        data.data,
+                        BHWSG.layout.secondary.find("ul")
+                        // action?
+                        );
                 }
                 else {
                     alert("Status: " + data.status + " Message: " + data.message);
