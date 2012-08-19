@@ -3,7 +3,7 @@
 {% block content %}
   <p>Home page!</p>
   {% if user.is_authenticated %}
-    Hi, {{ user.username }}. You are logged in.
+    Hi, {{ user.email }}. You are logged in.
     <p>New inbox:</p>
     <form action="{% url inbox-create %}" method="POST">{% csrf_token %}
         {{ inbox_form.as_p }}

@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.db import transaction
 from django.db import IntegrityError
 
-from core.utils import generate_username
+from core.utils import generate_username, memoize_method
 from models import Inbox, ForwardRule, DeleteRule
 
 
@@ -45,26 +45,43 @@ DeleteRuleFormSet = inlineformset_factory(
 
 
 class UserCreateForm(forms.ModelForm):
+    email = forms.EmailField(required=True)
+
     class Meta:
         model = User
         fields = ('email',)
 
+    def __init__(self, *args, **kwargs):
+        self.inbox = kwargs.pop('inbox', None)
+        super(UserCreateForm, self).__init__(*args, **kwargs)
+
+    @memoize_method
+    def existing_user(self, email):
+        if User.objects.filter(email=email).exists():
+            user = User.objects.get(email=email)
+        else:
+            user = None
+        return user
+
     def clean_email(self):
         email = self.cleaned_data['email']
-        if User.objects.filter(email=email).exists():
-            raise forms.ValidationError("This email already taken!")
-        else:
-            return email
+        user = self.existing_user(email)
+        if user and self.inbox and self.inbox.users.filter(id=user.id).exists():
+            raise forms.ValidationError("Already here!")
+        return email
 
     def save(self, *args, **kwargs):
-        for username in generate_username(self.cleaned_data['email']):
-            try:
-                sid = transaction.savepoint()
-                user = User.objects.create_user(
-                    username, self.cleaned_data['email'], '1'
-                )
-            except IntegrityError:
-                transaction.savepoint_rollback(sid)
-            else:
-                # Send mail to user here
-                return user
+        email = self.cleaned_data['email']
+        user = self.existing_user(email)
+        if not user:
+            for username in generate_username(email):
+                try:
+                    sid = transaction.savepoint()
+                    user = User.objects.create_user(
+                        username, self.cleaned_data['email'], '1'
+                    )
+                except IntegrityError:
+                    transaction.savepoint_rollback(sid)
+                else:
+                    break
+        return user

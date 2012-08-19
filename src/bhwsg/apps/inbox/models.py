@@ -53,7 +53,7 @@ class Inbox(models.Model):
 
     def get_settings(self):
         """ Get inbox settings """
-        return self.settings.all()    
+        return self.settings.all()
 
 
 class InboxSettings(models.Model):
@@ -133,7 +133,7 @@ class MailManager(models.Manager):
             Add new mail
         """
         parser = Mail.parser(raw_data['raw'])
-        
+
         raw_data.update({
             'from_email': parser.get_from(),
             'to_email': parser.get_to(),
@@ -143,30 +143,30 @@ class MailManager(models.Manager):
             'cc': parser.get_cc(),
             'subject': parser.get_subject()
         })
-        
+
         mail = self.create(
             inbox=inbox,
             **raw_data
         )
-        
+
         attachment = partial(MailAttachment, mail=mail)
-         
+
         # Save attacments
         MailAttachment.objects.bulk_create(
             [attachment(file=ContentFile(ac, n)) for n, ac in parser.get_attachments()]
         )
-        # Apply rules          
+        # Apply rules
         for settings in inbox.get_settings():
             try:
                 settings.get_correct_rule().apply(mail)
             except Exception, e:
-                logger.error('Rule execution failed: %s' % e)                       
+                logger.error('Rule execution failed: %s' % e)
 
-                
+
 
 class Mail(models.Model):
     parser = MailParser
-    
+
     inbox = models.ForeignKey(Inbox, related_name="mails")
     readers = models.ManyToManyField(User, related_name="mails")
     peer = models.CharField(max_length=255, blank=True, null=True)
@@ -188,21 +188,21 @@ class Mail(models.Model):
 
     # All content types of letter
     content_types = JSONField(blank=True, null=True)
-    
+
     objects = MailManager()
-    
+
     def __unicode__(self):
         return u'Mail for %s' % self.inbox
-    
+
     @memoize_method
     def get_parser(self):
         """ Returns object that has access to different parts of mail """
         return self.parser(self.raw)
-    
+
     @property
     def content_type(self):
-        return self.content_types and self.content_types[0] or None 
-    
+        return self.content_types and self.content_types[0] or None
+
     def has_html(self):
         return TEXT_HTML_CONTENT_TYPE in self.content_types
 
@@ -235,7 +235,7 @@ class Mail(models.Model):
 def get_attachment_upload_path(instance, name):
     name = name.encode('utf-8')
     return os.path.join(settings.MEDIA_ROOT, 'attachments', str(instance.mail.id), name)
-     
+
 
 class MailAttachment(models.Model):
     mail = models.ForeignKey(Mail, related_name='attachments')

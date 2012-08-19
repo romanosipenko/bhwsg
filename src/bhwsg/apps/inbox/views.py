@@ -3,7 +3,6 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 from models import Inbox
 from forms import InboxCreateForm, ForwardRuleFormSet, UserCreateForm
-# from core.utils import generate_username
 
 
 @login_required
@@ -51,7 +50,7 @@ def inbox_forward_rule_create(request, slug):
 @login_required
 def inbox_team_add(request, slug):
     inbox = get_object_or_404(Inbox, slug=slug)
-    user_form = UserCreateForm(request.POST or None)
+    user_form = UserCreateForm(request.POST or None, inbox=inbox)
     if request.method == "POST" and user_form.is_valid():
         member = user_form.save()
         inbox.users.add(member)
