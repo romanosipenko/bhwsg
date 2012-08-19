@@ -222,7 +222,7 @@ class Mail(models.Model):
     cc = JSONField(blank=True, null=True,
         help_text="Carbon copy")
     raw = models.TextField(blank=True, null=True)
-    subject = models.CharField(max_length=255, blank=True, null=True,
+    subject = models.TextField(max_length=255, blank=True, null=True,
         help_text="A brief summary of the topic of the message.")
     uuid = models.CharField(max_length=255, blank=True, null=True)
     date = models.DateTimeField(blank=True, null=True,
