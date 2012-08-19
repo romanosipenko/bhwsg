@@ -199,6 +199,12 @@ class MailManager(models.Manager):
         queryset = self.get_query_set().filter(inbox=inbox)
         queryset = queryset.prefetch_related('readers').order_by('-date')
         return queryset
+    
+    def get_mail(self, user, **kwargs):
+        queryset = self.get_query_set().filter(inbox__users=user)
+        queryset = queryset.prefetch_related('readers')
+        
+        return get_object_or_None(queryset, **kwargs)
 
 
 class Mail(models.Model):
@@ -250,10 +256,10 @@ class Mail(models.Model):
         pass
 
     def get_html(self):
-        return self.get_parser().get_text()
+        return self.get_parser().get_html()
 
     def get_text(self):
-        return self.get_parser().get_html()
+        return self.get_parser().get_text()
 
     def get_attachments(self):
         return self.attachments.objects.all()
@@ -268,7 +274,7 @@ class Mail(models.Model):
 
 def get_attachment_upload_path(instance, name):
     name = name.encode('utf-8')
-    return os.path.join(settings.MEDIA_ROOT, 'attachments', str(instance.mail.id), name)
+    return os.path.join('attachments', str(instance.mail.id), name)
 
 
 class MailAttachment(models.Model):

@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from models import Inbox
 from core.views import JsonView
 from forms import InboxCreateForm, ForwardRuleFormSet, UserCreateForm
-from inbox.decorators import inbox_required
+from inbox.decorators import inbox_required, mail_required
 from inbox.models import Mail
 
 
@@ -47,6 +47,38 @@ class InboxMailList(JsonView):
 
         return {'mails': map(prepare_mail_data, mails)}
 
+
+class MailView(JsonView):
+    @mail_required
+    def prepare_context(self, request, *args, **kwargs):
+        params = request.GET
+        mail = request.mail
+        
+        data = {'result': True}
+        if 'mark_readed' in params:
+            mail.readers.add(request.user)
+        elif 'delete' in params:
+            mail.delete()
+        else:
+            # return mail
+            if 'raw' in params:
+                data['raw'] = mail.raw
+            else:
+                data.update({
+                    'plain': mail.has_text() and mail.get_text() or None,
+                    'html': mail.has_html() and mail.get_html() or None,
+                    'from_email': mail.from_email,
+                    'to_email': mail.to_email,
+                    'bcc': mail.bcc,
+                    'cc': mail.cc,
+                    'subject': mail.subject,
+                    'date': mail.date.strftime('%Y-%m-%d %H:%M:%S'),
+                    'attachments': [attchmnt.file.url for attchmnt in mail.attachments.all()]
+                })
+        
+        return data
+            
+    
 
 @login_required
 def inbox_create(request):
