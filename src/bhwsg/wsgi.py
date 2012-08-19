@@ -21,7 +21,9 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bhwsg.settings")
 # file. This includes Django's development server, if the WSGI_APPLICATION
 # setting points here.
 from django.core.wsgi import get_wsgi_application
+import djcelery
 application = get_wsgi_application()
+djcelery.setup_loader()
 
 # Apply WSGI middleware here.
 # from helloworld.wsgi import HelloWorldApplication
