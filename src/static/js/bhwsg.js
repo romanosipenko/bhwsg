@@ -145,24 +145,41 @@ var BHWSG = (function(){
 
         // Temlates
         templates: {
-            inboxes: $("#template-inbox-list").html()
+            inboxes: $("#template-inbox-list").html(),
+            mails: $("#template-mail-list").html()
         }, // templates
 
-        // Fetchers
+        // Renders
         renderInboxes: function(data){
-            console.log("Try to render...");
-            console.log(data);
-            console.log(BHWSG.templates.inboxes);
-            console.log(data.data);
             var html = $.mustache(BHWSG.templates.inboxes, data);
-            console.log(html);
             BHWSG.layout.primary.find("ul").html(html);
+            BHWSG.actionInbox();
         }, // renderInboxes
 
+        renderMails: function(data){
+            var html = $.mustache(BHWSG.templates.mails, data);
+            BHWSG.layout.secondary.find("ul").html(html);
+        }, // renderMails
+
+        // Actions
+        actionInbox: function(){
+            BHWSG.layout.primary.find("ul li a").on("click", function(){
+                // Activate This inbox.
+                // 1. Switch title in secondary.
+                // 2. Activate loader.
+                // 3. fetch items.
+                // 4. Activate controls?
+                var this_ = $(this);
+                BHWSG.layout.secondary.find("h1 .label").text(this_.text());
+                BHWSG.layout.secondary.find("h1 .unread").text(this_.attr("data-unread"));
+                BHWSG.layout.secondary.find("h1 .total").text(this_.attr("data-count"));
+                BHWSG.fetchMails(this_.attr("data-slug"));
+            });
+        }, // actionInbox
+
+        // Fetchers
         fetchInboxes: function(){
-            console.log("Fetch inboxes...");
             $.getJSON("/inbox/list/", function(data){
-                console.log("Got json");
                 if (data.status === 200){
                     console.log("Status is OK, will render...");
                     BHWSG.renderInboxes(data.data);
@@ -171,7 +188,17 @@ var BHWSG = (function(){
                     alert("Status: " + data.status + " Message: " + data.message);
                 }
             });
-        } // fetchInboxes
+        }, // fetchInboxes
+        fetchMails: function(slug){
+            $.getJSON("/inbox/mail_list/" + slug + "/", function(data){
+                if (data.status === 200){
+                    BHWSG.renderMails(data.data);
+                }
+                else {
+                    alert("Status: " + data.status + " Message: " + data.message);
+                }
+            });
+        } // fetchMails
     };
 })($);
 

@@ -15,7 +15,7 @@
 </nav>
 <nav id="secondary">
   <h1>
-    All
+    <span class="label">All</span>
     <span class="counters">
       <span class="counter unread">2</span><span class="counter total">12</span>
     </span>
@@ -33,16 +33,28 @@
 <script type="text/template" id="template-inbox-list">
   [[#inboxes]]
   <li[[#active]] class="active"[[/active]]>
-    <a href="#p2">
+    <a href="#" data-slug="[[slug]]" data-count="[[count]]" data-unread="[[unread]]">
       [[title]]
-      [[#slug]]
-        <span class="label">[[slug]]</span>
-      [[/slug]]
+      [[#label]]
+        <span class="label">[[label]]</span>
+      [[/label]]
     </a>
     [[#unread]]
-    <span class="unread">4</span>
+    <span class="unread">[[unread]]</span>
     [[/unread]]
   </li>
   [[/inboxes]]
+</script>
+
+<script type="text/template" id="template-mail-list">
+[[#mails]]
+<li[[#alala]] class="active"[[/alala]]>
+  <h2>[[subject]]</h2>
+  <time datetime="[[date]]">[[date]]</time>
+  <p class="header from"><span class="label">from</span>[[from_email]]</p>
+  <p class="header to"><span class="label">to</span>[[to_email]] <strong>…</strong></p>
+  <p class="few-lines">[[few_lines]]</p>
+</li>
+[[/mails]]
 </script>
 {% endblock jstemplates %}
