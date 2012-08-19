@@ -26,14 +26,6 @@ BHWSG_SMTP_PORT = 1025
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
-ADMINS = (
-    ('Roman Osipenko', 'roman.osipenko@djangostars.com'),
-    ('Dmitry Upolovnikov', 'dmitry.upolovnikov@djangostars.com'),
-    ('Vasyl Stanislavchuk', 'vasyl.stanislavchuk@djangostars.com'),
-)
-
-MANAGERS = ADMINS
-
 TIME_ZONE = 'UTC'
 
 LANGUAGE_CODE = 'en-us'
