@@ -20,13 +20,16 @@ logger = logging.getLogger('inbox')
 
 class InboxManager(models.Manager):
     def get_user_inboxes(self, user, q_filter=None, q_exclude=None):
+        """ Get inboxes for given user. """
+        
         queryset = self.get_query_set().filter(users=user)
 
         if q_filter:
             queryset = queryset.filter(**q_filter)
         if q_exclude:
             queryset = queryset.exclude(**q_exclude)
-
+        
+        # Get unread records
         unreaded_letters = list(
             Mail.objects.filter(inbox__in=queryset)\
             .exclude(readers=user)\
@@ -34,10 +37,12 @@ class InboxManager(models.Manager):
         )
 
         for inbox in queryset:
+            # Add count of unreaded mails for inbox
             inbox.unreaded_mails = len(filter(lambda x: x == inbox.id, unreaded_letters))
             yield inbox
 
     def get_inbox(self, user, **kwargs):
+        """ Get inbox for given User """
         queryset = self.get_query_set().filter(users=user).prefetch_related('users')
         return get_object_or_None(queryset, **kwargs)
 
@@ -76,12 +81,6 @@ class Inbox(models.Model):
     @property
     def login(self):
         return self.slug
-
-    def get_mails(self, user):
-        """ Get inbox mails for current user """
-
-        mails = self.mails.filter().order_by('-date')
-        mails = mails.prefetch_related('readers', '')
 
     def get_settings(self):
         """ Get inbox settings """
@@ -265,9 +264,6 @@ class Mail(models.Model):
     def has_text(self):
         return TEXT_PLAIN_CONTENT_TYPE in self.content_types
 
-    def has_attachments(self):
-        pass
-
     def get_html(self):
         return self.get_parser().get_html()
 
@@ -278,6 +274,7 @@ class Mail(models.Model):
         return self.attachments.objects.all()
 
     def is_readed(self, user):
+        """ Mail is read by user """
         return True if self.readers.filter(id=user.id).count() else False
 
     @property
@@ -286,7 +283,11 @@ class Mail(models.Model):
 
 
 def get_attachment_upload_path(instance, name):
-    name = name.encode('utf-8')
+    try:
+        name = name.encode('utf-8')
+    except Exception, e:
+        pass
+    
     return os.path.join('attachments', str(instance.mail.id), name)
 
 

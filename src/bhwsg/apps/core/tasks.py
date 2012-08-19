@@ -1,14 +1,13 @@
 import logging
 from celery.decorators import task
 from core.utils import get_object_or_None
-from inbox.models import Mail, Inbox
-
 
 logger = logging.getLogger('core.tasks')
 
 
 @task
 def handle_mail(mail_dict):
+    from inbox.models import Mail, Inbox
     """
         Save mail to Inbox model. Check and apply handlig rules for email.
     """

@@ -7,6 +7,8 @@ To make development process more fun, we are try to provide full amount of tools
 
 We hope, that BHWSG will become one of your favorite development helper tool.
 
+(__This is our plan. Not everything is done yet. If you need working solution just now, look at existing service, where we take idea and inspiration__ http://mailtrap.io)
+
 ## Prerequisites ##
 
 - python >= 2.5
