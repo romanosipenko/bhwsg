@@ -40,7 +40,7 @@ class InboxManager(models.Manager):
             
     
     def get_inbox(self, user, **kwargs):
-        queryset = self.get_queryset().filter(users=user).prefetch_related('users')
+        queryset = self.get_query_set().filter(users=user).prefetch_related('users')
         return get_object_or_None(queryset, **kwargs)
 
 
