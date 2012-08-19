@@ -10,7 +10,7 @@ admin.autodiscover()
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^inbox/', include('inbox.urls')),
-    url(r'^mail/(?P<mail_id>[\d]+)', MailView.as_view(), name="mail-json"),
+    url(r'^mail/(?P<mail_id>[\d]+)/$', MailView.as_view(), name="mail-json"),
     url(r'^$', home, name="home"),
     url(r'^login/$', login_user, name="auth_login"),
     url(r'^logout/$', logout_user, name="auth_logout"),

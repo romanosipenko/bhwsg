@@ -79,7 +79,7 @@ var BHWSG = (function(){
         }, // init
 
         buildUI: function(){
-            BHWSG.fetchInboxes();
+            BHWSG._fetch("/inbox/list/", "inboxes", BHWSG.layout.primary.find("ul"), BHWSG.actionInbox);
         }, // buildUI
 
         layout: {
@@ -120,12 +120,15 @@ var BHWSG = (function(){
                 this_.addClass("active");
                 // BHWSG.getMessage(messageid)
                 // history.pushState(data, event.target.textContent, event.target.href);
+                // alert(this_.attr("data-url"));
+                BHWSG._fetch(this_.attr("data-url"), "mail", BHWSG.layout.mail);
 
                 return false;
             });
             Mousetrap.bind(["space", "down"], function(){BHWSG.pleaseHifhlightItemList("next");});
             Mousetrap.bind("up", function(){BHWSG.pleaseHifhlightItemList("prev");});
         }, // highlightItemList
+
         pleaseHifhlightItemList: function(direction){
             if (BHWSG.layout.active === "secondary"){
                 var current = BHWSG.layout.secondary.find("li.active");
@@ -146,7 +149,8 @@ var BHWSG = (function(){
         // Temlates
         templates: {
             inboxes: $("#template-inbox-list").html(),
-            mails: $("#template-mail-list").html()
+            mails: $("#template-mail-list").html(),
+            mail: $("#template-mail-detail").html()
         }, // templates
 
         // Renders
@@ -167,17 +171,6 @@ var BHWSG = (function(){
             if (!!!el.length){return html;}
         },
 
-        renderInboxes: function(data){
-            var html = $.mustache(BHWSG.templates.inboxes, data);
-            BHWSG.layout.primary.find("ul").html(html);
-            BHWSG.actionInbox();
-        }, // renderInboxes
-
-        renderMails: function(data){
-            var html = $.mustache(BHWSG.templates.mails, data);
-            BHWSG.layout.secondary.find("ul").html(html);
-        }, // renderMails
-
         // Actions
         actionInbox: function(){
             BHWSG.layout.primary.find("ul li a").on("click", function(){
@@ -190,46 +183,22 @@ var BHWSG = (function(){
                 BHWSG.layout.secondary.find("h1 .label").text(this_.text());
                 BHWSG.layout.secondary.find("h1 .unread").text(this_.attr("data-unread"));
                 BHWSG.layout.secondary.find("h1 .total").text(this_.attr("data-count"));
-                BHWSG.fetchMails(this_.attr("data-slug"));
+                BHWSG._fetch(this_.attr("data-url"), "mails", BHWSG.layout.secondary.find("ul"), BHWSG.highlightItemList);
+                // BHWSG.fetchMails(this_.attr("data-slug"));
             });
         }, // actionInbox
 
-        // Fetchers
-        fetchInboxes: function(){
-            $.getJSON("/inbox/list/", function(data){
+        _fetch: function(url, template, el, callback){
+            $.getJSON(url, function(data){
                 if (data.status === 200){
-                    console.log("Status is OK, will render...");
-                    // BHWSG.renderInboxes(data.data);
-                    //
-                    BHWSG._render(
-                        BHWSG.templates.inboxes, // template
-                        data.data, // data
-                        BHWSG.layout.primary.find("ul"), // el
-                        BHWSG.actionInbox // callback
-                        );
+                    console.log("Status is "+ data.status +", will render...");
+                    BHWSG._render(BHWSG.templates[template], data.data, el, callback);
                 }
                 else {
                     alert("Status: " + data.status + " Message: " + data.message);
                 }
             });
-        }, // fetchInboxes
-
-        fetchMails: function(slug){
-            $.getJSON("/inbox/mail_list/" + slug + "/", function(data){
-                if (data.status === 200){
-                    BHWSG.renderMails(data.data);
-                    BHWSG._render(
-                        BHWSG.templates.mails,
-                        data.data,
-                        BHWSG.layout.secondary.find("ul")
-                        // action?
-                        );
-                }
-                else {
-                    alert("Status: " + data.status + " Message: " + data.message);
-                }
-            });
-        } // fetchMails
+        }
     };
 })($);
 

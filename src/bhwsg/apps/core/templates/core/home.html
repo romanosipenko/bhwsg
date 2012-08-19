@@ -33,7 +33,7 @@
 <script type="text/template" id="template-inbox-list">
   [[#inboxes]]
   <li[[#active]] class="active"[[/active]]>
-    <a href="#" data-slug="[[slug]]" data-count="[[count]]" data-unread="[[unread]]">
+    <a href="#" data-slug="[[slug]]" data-count="[[count]]" data-unread="[[unread]]" data-url="[[url]]">
       [[title]]
       [[#label]]
         <span class="label">[[label]]</span>
@@ -48,7 +48,7 @@
 
 <script type="text/template" id="template-mail-list">
 [[#mails]]
-<li[[#alala]] class="active"[[/alala]]>
+<li data-url="[[url]]">
   <h2>[[subject]]</h2>
   <time datetime="[[date]]">[[date]]</time>
   <p class="header from"><span class="label">from</span>[[from_email]]</p>
@@ -57,4 +57,31 @@
 </li>
 [[/mails]]
 </script>
+
+<script type="text/template" id="template-mail-detail">
+    <article class="mail">
+      <h1>[[subject]]</h1>
+      <aside>
+        <p class="status">
+          <a href="#headers" class="action" data-action="show-headers">#<!--▼--></a>
+          <a href="#from" class="header main">[[from_email]]</a>
+          →
+          <a href="#to" class="header main">[[to_email]]</a>
+          <time datetime="[[date]]">8 minutes ago</time>
+        </p>
+        <div class="headers">
+          <p><span class="key">From</span><span class="value">super.specific@example.com</span></p>
+          <p><span class="key">To</span><span class="value">&lt;Name of Customer&gt; customer.aga@example.com, &lt;Another Customer&gt; bla.bla@example.com</span></p>
+          <p><span class="key">Date</span><span class="value">Thu, 16 Aug 2012 14:50:39 +0000</span></p>
+          <p><span class="key">Received</span><span class="value">from DBXPRD0510HT003.eur05.alibide.outlooker.com (157.56.252.165) by
+            CH1EHSMHS020.mofo.com (10.43.70.20) with Microsoft SMTP Server (TLS) id
+            14.1.225.23; Thu, 16 Aug 2012 14:50:48 +0000</span></p>
+        </div>
+      </aside>
+      <div class="message">
+        <pre>[[plain]]</pre>
+      </div>
+    </article>
+</script>
+
 {% endblock jstemplates %}

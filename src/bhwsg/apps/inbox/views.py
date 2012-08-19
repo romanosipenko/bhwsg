@@ -1,7 +1,7 @@
 import itertools
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
-
+from django.core.urlresolvers import reverse
 from models import Inbox
 from core.views import JsonView
 from forms import InboxCreateForm, ForwardRuleFormSet, UserCreateForm
@@ -17,6 +17,7 @@ class InboxList(JsonView):
                 'title': inbox.title,
                 'label': inbox.label,
                 'slug': inbox.slug,
+                'url': reverse('inbox-list', args=(inbox.slug,)),
                 'count': inbox.mails.count(),
                 'unread': inbox.unreaded_mails,
                 'users': list(inbox.users.values_list('id', flat=True)),
@@ -25,6 +26,7 @@ class InboxList(JsonView):
             'title': "All",
             'label': None,
             'slug': '/',
+            'url': reverse('home'),
             'count': reduce(lambda x, y: x + y, [inbox['count'] for inbox in response]),
             'unread': reduce(lambda x, y: x + y, [inbox['unread'] for inbox in response]),
             'users': list(set(itertools.chain.from_iterable([inbox['users'] for inbox in response]))),
@@ -51,7 +53,8 @@ class InboxMailList(JsonView):
             'to_email': mail.to_email,
             'date': mail.date.strftime('%Y-%m-%d %H:%M:%S'),
             'readed': mail.is_readed(request.user),
-            'few_lines': mail.few_lines
+            'few_lines': mail.few_lines,
+            'url': reverse('mail-json', args=(mail.id,))
         }
 
         return {'mails': map(prepare_mail_data, mails)}
