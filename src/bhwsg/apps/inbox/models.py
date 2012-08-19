@@ -37,8 +37,8 @@ class InboxManager(models.Manager):
         for inbox in queryset:
             inbox.unreaded_mails = len(filter(lambda x: x == inbox.id, unreaded_letters))
             yield inbox
-            
-    
+
+
     def get_inbox(self, user, **kwargs):
         queryset = self.get_query_set().filter(users=user).prefetch_related('users')
         return get_object_or_None(queryset, **kwargs)
@@ -258,7 +258,7 @@ class Mail(models.Model):
 
     def get_attachments(self):
         return self.attachments.objects.all()
-    
+
     def is_readed(self, user):
         return True if self.readers.filter(id=user.id).count() else False
 

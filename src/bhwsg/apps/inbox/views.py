@@ -11,10 +11,13 @@ from inbox.models import Mail
 class InboxList(JsonView):
     def prepare_context(self, request, *args, **kwargs):
         response = list()
-        for inbox in request.user.inboxes.all():
+        for inbox in Inbox.objects.get_user_inboxes(request.user):
             response.append({
                 'title': inbox.title,
+                'label': inbox.label,
                 'slug': inbox.slug,
+                'mails_count': inbox.mails.count(),
+                'mails_unreaded_count': inbox.unreaded_mails,
                 'users': list(inbox.users.values_list('id', flat=True)),
             })
         return {'inboxes': response}
