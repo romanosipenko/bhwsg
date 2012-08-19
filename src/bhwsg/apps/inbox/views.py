@@ -92,6 +92,11 @@ class MailView(JsonView):
                 data['raw'] = mail.raw
             else:
                 # Return normal mail
+                attachments = [
+                    {'name':attchmnt.file.name.split('/')[-1],
+                     'url':attchmnt.file.url
+                    } for attchmnt in mail.attachments.all()
+                ]
                 data.update({
                     'plain': mail.has_text() and mail.get_text() or None,
                     'html': mail.has_html() and mail.get_html() or None,
@@ -101,7 +106,7 @@ class MailView(JsonView):
                     'cc': mail.cc,
                     'subject': mail.subject,
                     'date': mail.date.strftime('%Y-%m-%d %H:%M:%S'),
-                    'attachments': [attchmnt.file.url for attchmnt in mail.attachments.all()]
+                    'attachments': attachments
                 })
 
         return data
