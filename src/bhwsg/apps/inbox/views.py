@@ -27,8 +27,10 @@ class InboxList(JsonView):
             'label': None,
             'slug': '/',
             'url': reverse('inbox-mail-list'),
-            'count': reduce(lambda x, y: x + y, [inbox['count'] for inbox in response]),
-            'unread': reduce(lambda x, y: x + y, [inbox['unread'] for inbox in response]),
+            'count': reduce(lambda x, y: x + y, [inbox['count'] for inbox in response])\
+                if response else 0,
+            'unread': reduce(lambda x, y: x + y, [inbox['unread'] for inbox in response])\
+                if response else 0,
             'users': list(set(itertools.chain.from_iterable([inbox['users'] for inbox in response]))),
         })
         return {'inboxes': response}
