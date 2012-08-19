@@ -18,7 +18,10 @@ class MailParser(object):
             name = item.get_filename()
             if name:
                 yield (name, item.get_payload(decode=True))         
-            
+    
+    def get_subject(self):
+        return self._mail['Subject']
+    
     def get_content_type(self):
         return self._mail['Content-Type']
     
