@@ -20,6 +20,7 @@
     <span class="counters">
       <span class="counter unread">2</span><span class="counter total">12</span>
     </span>
+    <span class="configure"><a href="#">configuration</a></span>
   </h1>
   <ul>
     <li class="empty">Configure your project</li>
@@ -34,7 +35,7 @@
 <script type="text/template" id="template-inbox-list">
   [[#inboxes]]
   <li>
-    <a href="#" data-slug="[[slug]]" data-count="[[count]]" data-unread="[[unread]]" data-url="[[url]]">
+    <a href="#" data-slug="[[slug]]" data-count="[[count]]" data-unread="[[unread]]" data-url="[[url]]" data-config="[[config]]">
       [[title]]
       [[#label]]
         <span class="label">[[label]]</span>

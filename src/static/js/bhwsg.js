@@ -186,6 +186,7 @@ var BHWSG = (function(){
                 BHWSG.layout.secondary.find("h1 .label").text(this_.text());
                 BHWSG.layout.secondary.find("h1 .unread").text(this_.attr("data-unread"));
                 BHWSG.layout.secondary.find("h1 .total").text(this_.attr("data-count"));
+                BHWSG.layout.secondary.find("h1 .configure a").attr("href", this_.attr("data-config"));
                 BHWSG._fetch(this_.attr("data-url"), "mails", BHWSG.layout.secondary.find("ul"), BHWSG.highlightItemList);
                 // BHWSG.fetchMails(this_.attr("data-slug"));
             });
