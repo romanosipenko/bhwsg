@@ -7,7 +7,7 @@ def check_inbox(func):
     def _check_inbox(self, request, *args, **kwargs):
         if not request.user.is_authenticated():
             raise PermisionDenited
-        
+
         if kwargs.get('slug'):
             inbox = Inbox.objects.get_inbox(user=request.user, slug=kwargs['slug'])
             if not inbox:
@@ -28,7 +28,6 @@ def mail_required(func):
             raise Http404
         if not request.user.is_authenticated():
             raise PermisionDenited
-
         mail = Mail.objects.get_mail(request.user, id=kwargs['mail_id'])
         if not mail:
             raise Http404
