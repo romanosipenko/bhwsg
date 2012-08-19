@@ -17,7 +17,7 @@ class InboxList(JsonView):
                 'title': inbox.title,
                 'label': inbox.label,
                 'slug': inbox.slug,
-                'url': reverse('inbox-list', args=(inbox.slug,)),
+                'url': reverse('inbox-mail-list', args=(inbox.slug,)),
                 'count': inbox.mails.count(),
                 'unread': inbox.unreaded_mails,
                 'users': list(inbox.users.values_list('id', flat=True)),
@@ -42,7 +42,7 @@ class InboxMailList(JsonView):
         else:
             # Get mails from all inboxes
             mails = Mail.objects.get_user_mails(request.user)
-            
+
         from_date = request.GET.get('from_date')
         if from_date:
             mails = mails.filter(date__gt=from_date)
