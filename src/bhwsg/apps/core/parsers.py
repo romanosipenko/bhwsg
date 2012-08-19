@@ -8,7 +8,11 @@ class MailParser(object):
     contenttype_scoredict = {TEXT_PLAIN_CONTENT_TYPE: 1.0, TEXT_HTML_CONTENT_TYPE: 0.5}
     
     def __init__(self, mail):
-        self._mail = email.message_from_string(mail.encode('utf-8'))
+        try:
+            mail = mail.encode('utf-8')
+        except Exception, e:
+            pass
+        self._mail = email.message_from_string(mail)
     
     def get_content_types(self):
         return list(set(item.get_content_type() for item in self._mail.walk()))
