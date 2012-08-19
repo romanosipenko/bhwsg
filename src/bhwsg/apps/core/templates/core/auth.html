@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <form action="{% url auth_login %}" method="post">{% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Log In" />
-  </form>
+	<form action="{% url auth_login %}" method="post" id="login">
+		<h1><strong>Black Hole</strong> With Small Gap</h1>
+		{% csrf_token %}
+		{{ form.as_p }}
+		<p class="controls"><input type="submit" value="Log In" /></p>
+	</form>
 {% endblock content %}
