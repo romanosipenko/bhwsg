@@ -25,14 +25,14 @@ class InboxMailList(JsonView):
     def prepare_context(self, request, *args, **kwargs):
         mails = Mail.objects.get_inbox_mails(request.inbox, request.user)
         from_date = request.GET.get('from_date')
-        
+
         if from_date:
             mails = mails.filter(date__gt=from_date)
-        
+
         count = request.GET.get('count', 50)
         if count and count != 'all':
             mails = mails[:count]
-            
+
         prepare_mail_data = lambda mail: {
             'subject': mail.subject,
             'from_email': mail.from_email,
@@ -41,7 +41,7 @@ class InboxMailList(JsonView):
             'readed': mail.is_readed(request.user),
             'few_lines': mail.few_lines
         }
-                   
+
         return {'mails': map(prepare_mail_data, mails)}
 
 
@@ -101,3 +101,13 @@ def inbox_team_add(request, slug):
     forward_formset = ForwardRuleFormSet(instance=inbox, prefix='forward_rule')
     context.update({"forward_formset": forward_formset, })
     return render(request, 'inbox/list.html', context)
+
+
+@login_required
+def inbox_team_remove_me(request, slug):
+    inbox = get_object_or_404(Inbox, slug=slug)
+    if request.user in inbox.users.all():
+        inbox.users.remove(request.user)
+    if not inbox.users.exists():
+        inbox.delete()
+    return redirect('home')

@@ -14,7 +14,7 @@ def validateEmail(email):
 
 
 class LoginForm(forms.Form):
-    username = forms.CharField(required=True)
+    username = forms.CharField(required=True, label="Username/Email")
     password = forms.CharField(required=True, widget=forms.PasswordInput)
 
     def clean_username(self):
@@ -23,12 +23,12 @@ class LoginForm(forms.Form):
             if validateEmail(username) and User.objects.filter(email=username).exists():
                 self.user = User.objects.get(email=username)
             else:
-                raise forms.ValidationError("Enter valid email/username or password.")
+                raise forms.ValidationError("Enter valid email/username.")
         else:
             if User.objects.filter(username=username).exists():
                 self.user = User.objects.get(username=username)
             else:
-                raise forms.ValidationError("Enter valid email/username or password.")
+                raise forms.ValidationError("Enter valid email/username.")
         return username
 
     def authenticate(self):
