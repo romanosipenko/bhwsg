@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<nav id="primary">
+<nav id="primary" data-url="{% url inbox-list %}">
   <ul>
     <li class="active">
       <a href="#inbox">All</a>
@@ -32,7 +32,7 @@
 {% block jstemplates %}
 <script type="text/template" id="template-inbox-list">
   [[#inboxes]]
-  <li[[#active]] class="active"[[/active]]>
+  <li>
     <a href="#" data-slug="[[slug]]" data-count="[[count]]" data-unread="[[unread]]" data-url="[[url]]">
       [[title]]
       [[#label]]

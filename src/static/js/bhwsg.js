@@ -79,7 +79,8 @@ var BHWSG = (function(){
         }, // init
 
         buildUI: function(){
-            BHWSG._fetch("/inbox/list/", "inboxes", BHWSG.layout.primary.find("ul"), BHWSG.actionInbox);
+            var url = BHWSG.layout.primary.attr("data-url");
+            BHWSG._fetch(url, "inboxes", BHWSG.layout.primary.find("ul"), BHWSG.actionInbox);
         }, // buildUI
 
         layout: {
@@ -180,6 +181,8 @@ var BHWSG = (function(){
                 // 3. fetch items.
                 // 4. Activate controls?
                 var this_ = $(this);
+                BHWSG.layout.primary.find("ul li.active").removeClass("active");
+                this_.parent("li").addClass("active");
                 BHWSG.layout.secondary.find("h1 .label").text(this_.text());
                 BHWSG.layout.secondary.find("h1 .unread").text(this_.attr("data-unread"));
                 BHWSG.layout.secondary.find("h1 .total").text(this_.attr("data-count"));
