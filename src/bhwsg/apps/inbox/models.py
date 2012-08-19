@@ -50,35 +50,42 @@ class Inbox(models.Model):
 class InboxSettings(models.Model):
     inbox = models.ForeignKey(Inbox, related_name="settings")
 
+    mask = models.CharField(max_length=255, blank=True, null=True)
+
+    RULES = [
+        'forwardrule',
+        'deleterule',
+    ]
+
+    def get_correct_rule(self):
+        for rule in self.RULES:
+            if hasattr(self, rule):
+                return getattr(self, rule)
+        else:
+            return None
+
     def get_rules(self, mail):
         return []
 
     def apply(self, mail):
         """Apply settings to certain mail"""
-        raise NotImplemented()
+        raise NotImplemented
+
+    def detail(self):
+        raise NotImplemented
 
 
-class Rule(InboxSettings):
-    mask = models.CharField(max_length=255, blank=True, null=True)
-
-    class Meta:
-        abstract = True
-
-    def get_correct_rule(self):
-        return self.kind
-
-
-class ForwardRule(Rule):
-    kind = 'forwardrule'
+class ForwardRule(InboxSettings):
     email_to = models.CharField(max_length=255, blank=True, null=True)
 
     def apply(self, mail):
         pass
 
+    def detail(self):
+        return u'Forward rule: to - %s, mask - %s' % (self.email_to or 'N/A', self.mask)
 
-class DeleteRule(Rule):
-    kind = 'deleterule'
 
+class DeleteRule(InboxSettings):
     NOT_READED = 0
     READED = 1
     READED_BY_ALL = 2
@@ -93,6 +100,9 @@ class DeleteRule(Rule):
 
     def apply(self):
         pass
+
+    def detail(self):
+        return u'Delete rule: to - %s, mask - %s' % (self.email_to, self.mask)
 
 
 class Mail(models.Model):

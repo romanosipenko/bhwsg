@@ -25,7 +25,7 @@ class ForwardRuleForm(forms.ModelForm):
         model = ForwardRule
 
 ForwardRuleFormSet = inlineformset_factory(
-    Inbox, ForwardRule, extra=0, can_delete=True,
+    Inbox, ForwardRule, extra=1, can_delete=True,
     form=ForwardRuleForm
 )
 

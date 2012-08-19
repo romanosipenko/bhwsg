@@ -8,6 +8,17 @@
     EMAIL_HOST_PASSWORD = '{{ inbox.password }}'<br />
     EMAIL_PORT = 2525
   </p>
+  <p>Settings:</p>
+  <ul>
+    {% for settings in inbox.settings.all %}
+      <li>{{ settings.get_correct_rule.detail }}</li>
+    {% endfor %}
+  </ul>
+  <p>Forward:</p>
+  <form action="{% url inbox-forward-rule-create inbox.slug %}" method="post">{% csrf_token %}
+    {{ forward_formset.as_table }}
+    <input type="submit" value="hyak">
+  </form>
   <p>Inbox for {{ inbox }}:</p>
   <ul>
     {% for mail in inbox.mails.all %}
