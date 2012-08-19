@@ -2,7 +2,7 @@ import os
 import logging
 import  fnmatch
 import re
-from annoying.functions import get_object_or_None
+from core.utils import get_object_or_None
 from functools import partial
 from django.db import models
 from django.contrib.auth.models import User

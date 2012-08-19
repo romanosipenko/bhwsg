@@ -9,7 +9,7 @@ import socket
 import logging
 import asynchat
 import errno
-from annoying.functions import get_object_or_None
+from core.utils import get_object_or_None
 
 from inbox.models import Inbox
 

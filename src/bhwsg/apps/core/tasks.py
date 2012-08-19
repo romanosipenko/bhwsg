@@ -1,9 +1,8 @@
 import logging
 from celery.decorators import task
-from annoying.functions import get_object_or_None
-
+from core.utils import get_object_or_None
 from inbox.models import Mail, Inbox
-from core.parsers import MailParser
+
 
 logger = logging.getLogger('core.tasks')
 
