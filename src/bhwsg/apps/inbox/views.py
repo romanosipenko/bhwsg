@@ -1,3 +1,4 @@
+import itertools
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 
@@ -20,6 +21,14 @@ class InboxList(JsonView):
                 'unread': inbox.unreaded_mails,
                 'users': list(inbox.users.values_list('id', flat=True)),
             })
+        response.insert(0, {
+            'title': "All",
+            'label': None,
+            'slug': '/',
+            'count': reduce(lambda x, y: x + y, [inbox['count'] for inbox in response]),
+            'unread': reduce(lambda x, y: x + y, [inbox['unread'] for inbox in response]),
+            'users': list(set(itertools.chain.from_iterable([inbox['users'] for inbox in response]))),
+        })
         return {'inboxes': response}
 
 
@@ -77,7 +86,6 @@ class MailView(JsonView):
                 })
 
         return data
-
 
 
 @login_required
