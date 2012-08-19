@@ -1,5 +1,3 @@
-Mustache.tags = ['[[', ']]'];
-
 if(typeof(console) === 'undefined') {
     var console = {};
     console.log = console.error = console.info = console.debug = console.warn = console.trace = console.dir = console.dirxml = console.group = console.groupEnd = console.time = console.timeEnd = console.assert = console.profile = function() {};
@@ -77,7 +75,12 @@ var BHWSG = (function(){
             BHWSG.resizePanels();
             BHWSG.slideHeaders();
             BHWSG.highlightItemList();
+            BHWSG.buildUI();
         }, // init
+
+        buildUI: function(){
+            BHWSG.fetchInboxes();
+        }, // buildUI
 
         layout: {
             'primary': $("#primary"),
@@ -142,17 +145,26 @@ var BHWSG = (function(){
 
         // Temlates
         templates: {
-            inboxes: $("#inboxes-list-templates").html()
+            inboxes: $("#template-inbox-list").html()
         }, // templates
 
         // Fetchers
         renderInboxes: function(data){
-            var html = $.mustache(BHWSG.templates.inboxes, data.data);
+            console.log("Try to render...");
+            console.log(data);
+            console.log(BHWSG.templates.inboxes);
+            console.log(data.data);
+            var html = $.mustache(BHWSG.templates.inboxes, data);
+            console.log(html);
+            BHWSG.layout.primary.find("ul").html(html);
         }, // renderInboxes
 
         fetchInboxes: function(){
-            $.getJSON("http://localhost:8000/inbox/list/", function(data){
+            console.log("Fetch inboxes...");
+            $.getJSON("/inbox/list/", function(data){
+                console.log("Got json");
                 if (data.status === 200){
+                    console.log("Status is OK, will render...");
                     BHWSG.renderInboxes(data.data);
                 }
                 else {

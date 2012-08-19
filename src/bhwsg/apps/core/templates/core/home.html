@@ -1,23 +1,46 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <p>Home page!</p>
-  {% if user.is_authenticated %}
-    Hi, {{ user.email }}. You are logged in.
-    <p>New inbox:</p>
-    <form action="{% url inbox-create %}" method="POST">{% csrf_token %}
-        {{ inbox_form.as_p }}
-        <input type="submit" value="save">
-    </form>
-    {% if user.inboxes.exists %}
-      <ul>
-        {% for inbox in user.inboxes.all %}
-          <li><a href="{{ inbox.get_absolute_url }}">{{ inbox.title }}</a></li>
-        {% endfor %}
-      </ul>
-    {% endif %}
-    <a href="{% url auth_logout %}">Logout</a>.<br/><br/>
-  {% else %}
-    <a href="{% url auth_login %}">Login</a>
-  {% endif %}
+<nav id="primary">
+  <ul>
+    <li class="active">
+      <a href="#inbox">All</a>
+      {# <span class="unread">∞</span><!-- If more than 9 --> #}
+    </li>
+  </ul>
+  <span class="username">
+    {{ user.email }}
+    <a href="{% url auth_logout %}">logout</a>
+  </span>
+</nav>
+<nav id="secondary">
+  <h1>
+    All
+    <span class="counters">
+      <span class="counter unread">2</span><span class="counter total">12</span>
+    </span>
+  </h1>
+  <ul>
+    <li class="empty">Configure your project</li>
+  </ul>
+</nav>
+<section id="mail">
+</section>
 {% endblock content %}
+
+
+{% block jstemplates %}
+<script type="text/template" id="template-inbox-list">
+  [[#inboxes]]
+  <li class="active">
+    <a href="#p2">
+      [[title]]
+      [[#slug]]
+        <span class="label">[[slug]]</span>
+      [[/slug]]
+    </a>
+    <span class="unread">4</span>
+  </li>
+  [[/inboxes]]
+</script>
+{% endblock jstemplates %}

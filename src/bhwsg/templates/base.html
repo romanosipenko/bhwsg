@@ -10,8 +10,12 @@
 <body>
     {% block content %}
     {% endblock content %}
+	{% block jstemplates %}
+	{% endblock jstemplates %}
 	<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js"></script>
+	<script src="{{STATIC_URL}}js/mustache.js"></script>
 	<script src="{{STATIC_URL}}js/mousetrap.js"></script>
 	<script src="{{STATIC_URL}}js/bhwsg.js"></script>
+
 </body>
 </html>
