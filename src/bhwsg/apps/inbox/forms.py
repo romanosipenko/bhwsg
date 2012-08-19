@@ -1,9 +1,12 @@
-import uuid
+import string
+import random
 from django import forms
 from django.forms.models import inlineformset_factory
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.db import IntegrityError
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
 
 from core.utils import generate_username, memoize_method
 from models import Inbox, ForwardRule, DeleteRule
@@ -19,7 +22,7 @@ class InboxCreateForm(forms.ModelForm):
         super(InboxCreateForm, self).__init__(*args, **kwargs)
 
     def save(self, *args, **kwargs):
-        self.instance.password = uuid.uuid4()
+        self.instance.password = ''.join([random.choice(string.letters) for i in xrange(6)])
         self.instance.owner = self.owner
         return super(InboxCreateForm, self).save(*args, **kwargs)
 
@@ -73,19 +76,24 @@ class UserCreateForm(forms.ModelForm):
     def save(self, *args, **kwargs):
         email = self.cleaned_data['email']
         user = self.existing_user(email)
+        mail_title = 'Congratulations! New inbox.'
         if user:
-            # send
-            pass
+            message = render_to_string('inbox/inbox-team-new-member.html', {
+                'inbox': self.inbox, 'email': user.email, })
+            send_mail(mail_title, message, 'hyi@exampe.com', [email])
         else:
             for username in generate_username(email):
                 try:
                     sid = transaction.savepoint()
+                    password = ''.join([random.choice(string.letters) for i in xrange(6)])
                     user = User.objects.create_user(
-                        username, self.cleaned_data['email'], '1'
+                        username, self.cleaned_data['email'], password
                     )
                 except IntegrityError:
                     transaction.savepoint_rollback(sid)
                 else:
-                    # send
+                    message = render_to_string('inbox/inbox-team-new-member.html', {
+                        'inbox': self.inbox, 'email': user.email, 'password': password})
+                    send_mail(mail_title, message, 'hyi@exampe.com', [email])
                     break
         return user
