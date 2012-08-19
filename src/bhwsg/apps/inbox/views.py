@@ -8,8 +8,14 @@ from forms import InboxCreateForm, ForwardRuleFormSet, UserCreateForm
 
 class InboxList(JsonView):
     def prepare_context(self, request, *args, **kwargs):
-        """ Prepare there your ansver. Must returns dict """
-        return {'inboxes': list(request.user.inboxes.values('title', 'slug', 'users'))}
+        response = list()
+        for inbox in request.user.inboxes.all():
+            response.append({
+                'title': inbox.title,
+                'slug': inbox.slug,
+                'users': list(inbox.users.values_list('id', flat=True)),
+            })
+        return {'inboxes': response}
 
 
 @login_required

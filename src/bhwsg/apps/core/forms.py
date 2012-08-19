@@ -21,7 +21,7 @@ class LoginForm(forms.Form):
         username = self.cleaned_data['username']
         if '@' in username:
             if validateEmail(username) and User.objects.filter(email=username).exists():
-                    self.user = User.objects.get(email=username)
+                self.user = User.objects.get(email=username)
             else:
                 raise forms.ValidationError("Enter valid email/username or password.")
         else:
