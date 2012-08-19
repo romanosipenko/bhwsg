@@ -47,7 +47,7 @@ class InboxMailList(JsonView):
 
         prepare_mail_data = lambda mail: {
             'subject': mail.subject,
-            'from_email': mail.from_email,
+            'from_email': mail.from_email_pretty,
             'to_email': mail.to_email,
             'date': mail.date.strftime('%Y-%m-%d %H:%M:%S'),
             'readed': mail.is_readed(request.user),
@@ -76,7 +76,7 @@ class MailView(JsonView):
                 data.update({
                     'plain': mail.has_text() and mail.get_text() or None,
                     'html': mail.has_html() and mail.get_html() or None,
-                    'from_email': mail.from_email,
+                    'from_email': mail.from_email_pretty,
                     'to_email': mail.to_email,
                     'bcc': mail.bcc,
                     'cc': mail.cc,

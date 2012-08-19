@@ -12,7 +12,7 @@ def inbox_required(func):
 
         inbox = Inbox.objects.get_inbox(user=request.user, slug=kwargs['slug'])
         if not inbox:
-            raise PermisionDenited
+            raise Http404
 
         request.inbox = inbox
 
@@ -30,7 +30,7 @@ def mail_required(func):
 
         mail = Mail.objects.get_mail(request.user, id=kwargs['mail_id'])
         if not mail:
-            raise PermisionDenited
+            raise Http404
 
         request.mail = mail
 

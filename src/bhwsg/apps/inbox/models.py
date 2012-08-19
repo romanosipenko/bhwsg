@@ -222,7 +222,7 @@ class Mail(models.Model):
     cc = JSONField(blank=True, null=True,
         help_text="Carbon copy")
     raw = models.TextField(blank=True, null=True)
-    subject = models.TextField(max_length=255, blank=True, null=True,
+    subject = models.TextField(blank=True, null=True,
         help_text="A brief summary of the topic of the message.")
     uuid = models.CharField(max_length=255, blank=True, null=True)
     date = models.DateTimeField(blank=True, null=True,
@@ -235,7 +235,16 @@ class Mail(models.Model):
 
     def __unicode__(self):
         return u'Mail for %s' % self.inbox
+    
+    @property
+    def from_email_pretty(self):
+        mail = re.search('[a-zA-Z0-9+_\-\.]+@[0-9a-zA-Z][.-0-9a-zA-Z]*.[a-zA-Z]+', self.from_email)
+        if mail:
+            mail = mail.group()
+        
+        return mail
 
+    
     @memoize_method
     def get_parser(self):
         """ Returns object that has access to different parts of mail """
