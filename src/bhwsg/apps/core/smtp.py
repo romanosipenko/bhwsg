@@ -1,6 +1,5 @@
 import smtpd
 import datetime
-import time
 from uuid import uuid1
 from smtpd import DEBUGSTREAM, EMPTYSTRING, NEWLINE
 import base64
@@ -9,7 +8,7 @@ import socket
 import logging
 import asynchat
 import errno
-from annoying.functions import get_object_or_None
+from core.utils import get_object_or_None
 
 from inbox.models import Inbox
 
@@ -24,32 +23,32 @@ class BHWSGSMTPCredintailsValidator(object):
         self.inbox = None
         self.password = None
         self.valid = False
-    
+
     def _validate(self, username, password):
         # Get inbox, using credintails
         inbox = get_object_or_None(Inbox, slug=username, password=password)
-        return True if inbox else False 
-    
+        return True if inbox else False
+
     def validate(self, username, password):
         self.valid = self._validate(username, password)
         if self.valid:
             self.inbox = username
             self.password = password
-            
-        return self.valid 
+
+        return self.valid
 
 
 class BHWSGSMTPServer(smtpd.SMTPServer):
     """ SMTP Server instance. Move incoming mails to Celery """
-    
+
     def __init__(self, localaddr, remoteaddr, credential_validator=BHWSGSMTPCredintailsValidator):
         smtpd.SMTPServer.__init__(self, localaddr, remoteaddr)
         self.credential_validator = BHWSGSMTPCredintailsValidator()
-        
+
     def process_message(self, peer, mailfrom, rcpttos, data):
         print 'process'
         print self.credential_validator.__dict__
-        
+
         if self.credential_validator.valid:
             mail_dict = {
                 'peer': peer,
@@ -63,20 +62,19 @@ class BHWSGSMTPServer(smtpd.SMTPServer):
             # Save mail to db in celery task
             from core.tasks import handle_mail
             print handle_mail.delay(mail_dict)
-            
-    
+
     def handle_accept(self):
         pair = self.accept()
         if pair is not None:
             conn, addr = pair
             print >> DEBUGSTREAM, 'Incoming connection from %s' % repr(addr)
-            channel = BHWSGSMTPChanel(self, conn, addr, self.credential_validator)
+            BHWSGSMTPChanel(self, conn, addr, self.credential_validator)
 
 
 class BHWSGSMTPChanel(asynchat.async_chat):
     COMMAND = 0
     DATA = 1
-    
+
     def __init__(self, server, conn, addr, credential_validator):
         asynchat.async_chat.__init__(self, conn)
         self.__server = server
@@ -101,16 +99,15 @@ class BHWSGSMTPChanel(asynchat.async_chat):
         print >> DEBUGSTREAM, 'Peer:', repr(self.__peer)
         self.push('220 %s %s' % (self.__fqdn, __version__))
         self.set_terminator('\r\n')
-        
+
         self.authenticating = False
         self.authenticated = False
         self.username = None
         self.password = None
         self.credential_validator = credential_validator
-        
+
         self.debug = True
-        self.logger = logging.getLogger( 'smtp' )
-   
+        self.logger = logging.getLogger('smtp')
 
     # smtp_EHLO and smtp_AUTH are stoled from secure-smtpd. https://github.com/bcoe/secure-smtpd
     def smtp_EHLO(self, arg):
@@ -120,24 +117,24 @@ class BHWSGSMTPChanel(asynchat.async_chat):
         if self.__greeting:
             self.push('503 Duplicate HELO/EHLO')
         else:
-            self.push('250-%s Hello %s' %  (self.__fqdn, arg))
+            self.push('250-%s Hello %s' % (self.__fqdn, arg))
             self.push('250-AUTH LOGIN')
             self.push('250 EHLO')
-    
+
     def smtp_AUTH(self, arg):
         if 'LOGIN' in arg:
             self.authenticating = True
             split_args = arg.split(' ')
-            
+
             # Some implmentations of 'LOGIN' seem to provide the username
             # along with the 'LOGIN' stanza, hence both situations are
             # handled.
             if len(split_args) == 2:
-                self.username = base64.b64decode( arg.split(' ')[1] )
+                self.username = base64.b64decode(arg.split(' ')[1])
                 self.push('334 ' + base64.b64encode('Username'))
             else:
                 self.push('334 ' + base64.b64encode('Username'))
-                
+
         elif not self.username:
             self.username = base64.b64decode(arg)
             self.push('334 ' + base64.b64encode('Password'))
@@ -155,10 +152,10 @@ class BHWSGSMTPChanel(asynchat.async_chat):
     # support for AUTH is added.
     def found_terminator(self):
         line = EMPTYSTRING.join(self.__line)
-        
+
         if self.debug:
             self.logger.info('found_terminator(): data: %s' % repr(line))
-            
+
         self.__line = []
         if self.__state == self.COMMAND:
             if not line:
@@ -166,7 +163,7 @@ class BHWSGSMTPChanel(asynchat.async_chat):
                 return
             method = None
             i = line.find(' ')
-            
+
             if self.authenticating:
                 # If we are in an authenticating state, call the
                 # method smtp_AUTH.
@@ -177,13 +174,13 @@ class BHWSGSMTPChanel(asynchat.async_chat):
                 arg = None
             else:
                 command = line[:i].upper()
-                arg = line[i+1:].strip()
-            
+                arg = line[i + 1:].strip()
+
             # White list of operations that are allowed prior to AUTH.
             if not command in ['AUTH', 'EHLO', 'HELO', 'NOOP', 'RSET', 'QUIT']:
                 if not self.authenticated:
                     self.push('530 Authentication required')
-                    
+
             method = getattr(self, 'smtp_' + command, None)
             if not method:
                 self.push('502 Error: command "%s" not implemented' % command)
@@ -217,10 +214,8 @@ class BHWSGSMTPChanel(asynchat.async_chat):
                 self.push('250 Ok')
             else:
                 self.push(status)
-    
-    
+
     # Copypaste from smtpd chanel
-    
     # Overrides base class for convenience
     def push(self, msg):
         asynchat.async_chat.push(self, msg + '\r\n')
@@ -228,8 +223,7 @@ class BHWSGSMTPChanel(asynchat.async_chat):
     # Implementation of base class abstract method
     def collect_incoming_data(self, data):
         self.__line.append(data)
-    
-    
+
     # SMTP and ESMTP commands
     def smtp_HELO(self, arg):
         if not arg:
@@ -313,4 +307,3 @@ class BHWSGSMTPChanel(asynchat.async_chat):
         self.__state = self.DATA
         self.set_terminator('\r\n.\r\n')
         self.push('354 End data with <CR><LF>.<CR><LF>')
-

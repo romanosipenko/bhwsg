@@ -1,6 +1,5 @@
 django>=1.4
 psycopg2
 south
-django-annoying
 django-celery
 celery

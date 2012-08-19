@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from models import Inbox
 from core.views import JsonView
 from forms import InboxCreateForm, ForwardRuleFormSet, UserCreateForm
-from inbox.decorators import inbox_required, mail_required
+from inbox.decorators import check_inbox, mail_required
 from inbox.models import Mail
 
 
@@ -35,11 +35,15 @@ class InboxList(JsonView):
 
 
 class InboxMailList(JsonView):
-    @inbox_required
+    @check_inbox
     def prepare_context(self, request, *args, **kwargs):
-        mails = Mail.objects.get_inbox_mails(request.inbox, request.user)
+        if request.inbox:
+            mails = Mail.objects.get_inbox_mails(request.inbox)
+        else:
+            # Get mails from all inboxes
+            mails = Mail.objects.get_user_mails(request.user)
+            
         from_date = request.GET.get('from_date')
-
         if from_date:
             mails = mails.filter(date__gt=from_date)
 

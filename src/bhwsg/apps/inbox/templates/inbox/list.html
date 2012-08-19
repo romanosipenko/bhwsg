@@ -33,7 +33,7 @@
   <ul>
     {% for mail in inbox.mails.all %}
       <li>{{ mail.subject }} - {{ mail.to_email }}<br />
-        {{ mail.get_html|safe|truncatechars:200 }}
+        {{ mail.get_text|safe|truncatechars:200 }}
       </li>
     {% endfor %}
   </ul>

@@ -13,8 +13,6 @@ class Command(BaseCommand):
         try:
             asyncore.loop()
         except KeyboardInterrupt:
-            # log.info("<<< v.%s stoped." % __version__)
             sys.exit(0)
         except BaseException:
-            # log.critical("<<< v. %s interrupted: %s" % (s, __version__))
             sys.exit(1)

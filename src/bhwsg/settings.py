@@ -1,5 +1,8 @@
 import os.path
 import sys
+import djcelery
+
+djcelery.setup_loader()
 
 PROJECT_PATH = os.path.abspath(os.path.dirname(__name__))
 PUBLIC_DIR = os.path.join(PROJECT_PATH, 'public')
