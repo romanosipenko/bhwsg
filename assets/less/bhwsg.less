@@ -32,7 +32,6 @@ ul {
 }
 
 #primary {
-	// background: #444;
 	background-image: linear-gradient(bottom, rgb(34,34,34) 0%, rgb(102,102,102) 100%);
 	background-image: -o-linear-gradient(bottom, rgb(34,34,34) 0%, rgb(102,102,102) 100%);
 	background-image: -moz-linear-gradient(bottom, rgb(34,34,34) 0%, rgb(102,102,102) 100%);
@@ -50,15 +49,80 @@ ul {
 	left: 0;
 	width: 100%;
 	height: @primary-height;
-	z-index: 5;
+	padding-left: 1em;
 
 	li {
 		float: left;
-		height: @primary-height;
-		line-height: @primary-height;
+		margin-right: .5em;
+		margin-top: .5em;
+		padding: .25em .5em;
+		position: relative;
+		border-radius: .125em;
+
+
+		.unread {
+			position: absolute;
+			background: lighten(#cc211b, 10%);
+			color: #fff;
+			font-size: .75em;
+			width: 1.5em;
+			height: 1.5em;
+			border-radius: 50%;
+			display: inline-block;
+			text-align: center;
+			top: -.25em;
+			left: -.25em;
+			opacity: .9;
+		}
 
 		&.active {
 			background: #fafafa;
+
+			a {
+				color: #444;
+			}
+
+			.label {
+				color: #777;
+			}
+		}
+
+		a {
+			color: #fff;
+			text-decoration: none;
+			position: relative;
+
+			.label {
+				position: absolute;
+				left: .125em;
+				font-size: .5em;
+				top: 1.5em;
+				font-weight: 100;
+				color: #ccc;
+			}
+		}
+	}
+
+	.username {
+		position: absolute;
+		right: 1em;
+		top: 1em;
+		color: #eee;
+		font-weight: 100;
+		font-size: .8em;
+		background: rgba(0,0,0, .2);
+		padding: .125em .5em;
+		border-radius: .25em;
+		box-shadow: 0 0 3px #555 inset;
+		padding-left: .5em;
+		display: inline-block;
+
+		a {
+			color: #aaa;
+			border-left: 1px solid #444;
+			display: inline-block;
+			padding: 0 .5em;
+			margin-left: .25em;
 		}
 	}
 }
@@ -104,7 +168,8 @@ ul {
 
 			.unread {
 				border-radius: .25em 0 0 .25em;
-				background: lighten(#cc211b, 10%);
+				// background: lighten(#cc211b, 10%);
+				background: #888;
 				color: #fff;
 			}
 		}
@@ -210,13 +275,84 @@ ul {
 		font-weight: 100;
 		letter-spacing: -1px;
 		border-bottom: 1px solid #ddd; // debug
-		background: lighten(#859356, 35%); //debug
-		}
+		// background: lighten(#859356, 35%); //debug
+		background: #fafafa; /* Old browsers */
+		background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMTAwJSIgeDI9IjEwMCUiIHkyPSIwJSI+CiAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZWVlZWVlIiBzdG9wLW9wYWNpdHk9IjEiLz4KICAgIDxzdG9wIG9mZnNldD0iNDklIiBzdG9wLWNvbG9yPSIjZmFmYWZhIiBzdG9wLW9wYWNpdHk9IjEiLz4KICA8L2xpbmVhckdyYWRpZW50PgogIDxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9InVybCgjZ3JhZC11Y2dnLWdlbmVyYXRlZCkiIC8+Cjwvc3ZnPg==);
+		background: -moz-linear-gradient(45deg,  #eeeeee 0%, #fafafa 49%); /* FF3.6+ */
+		background: -webkit-gradient(linear, left bottom, right top, color-stop(0%,#eeeeee), color-stop(49%,#fafafa)); /* Chrome,Safari4+ */
+		background: -webkit-linear-gradient(45deg,  #eeeeee 0%,#fafafa 49%); /* Chrome10+,Safari5.1+ */
+		background: -o-linear-gradient(45deg,  #eeeeee 0%,#fafafa 49%); /* Opera 11.10+ */
+		background: -ms-linear-gradient(45deg,  #eeeeee 0%,#fafafa 49%); /* IE10+ */
+		background: linear-gradient(45deg,  #eeeeee 0%,#fafafa 49%); /* W3C */
+	}
 
 	aside {
 		// margin: 0 2em 0 2em;
-		padding: .5em 1em;
-		background: #eee;
+		background: lighten(#859356, 45%); //debug
+		border: 1px solid #bbb;
+		border-left: none;
+		border-right: none;
+		// background: #eee;
+
+		.status {
+			padding: .5em 1em;
+			position: relative;
+
+			time {
+				position: absolute;
+				right: .5em;
+				top: -2.75em;
+			}
+
+			.action {
+				margin-right: 1em;
+				color: #222;
+				text-decoration: none;
+				font-size: .8em;
+				border: 1px solid #aaa;
+				display: inline-block;
+				width: 1.5em;
+				height: 1.5em;
+				text-align: center;
+				line-height: 1.5em;
+				border-radius: .25em;
+				background: #ddd;
+				box-shadow: 0 0 2px #444;
+				// text-shadow: 0 1px #eee;
+				// font-weight: bold;
+			}
+
+			.header.main {
+				color: #222;
+				font-weight: 100;
+				text-decoration: none;
+			}
+		}
+		.headers {
+			border-top: 1px solid #fff;
+			p {
+				font-size: .8em;
+				line-height: 1.8;
+				position: relative;
+
+				.key {
+					display: inline-block;
+					width: 7em;
+					text-align: right;
+					height: 100%;
+					font-weight: bold;
+					position: absolute;
+				}
+				.value {
+					margin-left: 7.5em;
+					display: inline-block;
+				}
+
+				&:nth-child(odd){
+					background: lighten(#859356, 50%);
+				}
+			}
+		}
 	}
 
 	.mail {
