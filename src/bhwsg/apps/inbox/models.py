@@ -187,6 +187,7 @@ class MailManager(models.Manager):
         MailAttachment.objects.bulk_create(
             [attachment(file=ContentFile(ac, n)) for n, ac in parser.get_attachments()]
         )
+
         # Apply rules
         for settings in inbox.get_settings():
             try:
@@ -206,7 +207,7 @@ class MailManager(models.Manager):
         return self._prefetch(queryset)
 
     def get_mail(self, user, **kwargs):
-        queryset = self.get_user_mails().prefetch_related('readers')
+        queryset = self.get_user_mails(user).prefetch_related('readers')
 
         return get_object_or_None(queryset, **kwargs)
 
