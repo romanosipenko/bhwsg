@@ -3,3 +3,4 @@ psycopg2
 south
 django-celery
 celery
+gunicorn
