@@ -6,6 +6,10 @@ from core.utils import memoize_method
 from core.parsers import MailParser, TEXT_PLAIN_CONTENT_TYPE,\
     TEXT_HTML_CONTENT_TYPE
 
+from django.core.mail import send_mail
+import  fnmatch
+import re
+
 
 class Inbox(models.Model):
     title = models.CharField(max_length=50)
@@ -40,11 +44,9 @@ class Inbox(models.Model):
     def login(self):
         return self.slug
 
-    def get_rules(self):
-        """ Get inbox rules """
-
-        rules = list(ForwardRule.objects.filter(inbox=self))
-        return rules
+    def get_settings(self):
+        """ Get inbox settings """
+        return self.settings.all()
 
 
 class InboxSettings(models.Model):
@@ -52,9 +54,11 @@ class InboxSettings(models.Model):
 
     mask = models.CharField(max_length=255, blank=True, null=True)
 
+    FORWARD = 'forwardrule'
+    DELETE = 'deleterule'
     RULES = [
-        'forwardrule',
-        'deleterule',
+        FORWARD,
+        DELETE,
     ]
 
     def get_correct_rule(self):
@@ -63,9 +67,6 @@ class InboxSettings(models.Model):
                 return getattr(self, rule)
         else:
             return None
-
-    def get_rules(self, mail):
-        return []
 
     def apply(self, mail):
         """Apply settings to certain mail"""
@@ -78,11 +79,24 @@ class InboxSettings(models.Model):
 class ForwardRule(InboxSettings):
     email_to = models.CharField(max_length=255, blank=True, null=True)
 
-    def apply(self, mail):
-        pass
+    def __unicode__(self):
+        return '%s, %s' % (self.inbox, self.detail)
 
+    @property
     def detail(self):
         return u'Forward rule: to - %s, mask - %s' % (self.email_to or 'N/A', self.mask)
+
+    def apply(self, mail):
+        if self.mask:
+            for mail in self.email_to:
+                regex = fnmatch.translate(self.mask)
+                reobj = re.compile(regex)
+                if reobj.match(self.email_to):
+                    forward = True
+            else:
+                forward = False
+            if forward:
+                send_mail(mail.subject, mail.message, mail.from_email, [self.email_to])
 
 
 class DeleteRule(InboxSettings):
@@ -98,11 +112,12 @@ class DeleteRule(InboxSettings):
     readed = models.PositiveSmallIntegerField(blank=True, null=True,
         choices=READED_CHOICES)
 
-    def apply(self):
-        pass
-
+    @property
     def detail(self):
         return u'Delete rule: to - %s, mask - %s' % (self.email_to, self.mask)
+
+    def apply(self):
+        pass
 
 
 class Mail(models.Model):

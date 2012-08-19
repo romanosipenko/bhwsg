@@ -35,6 +35,6 @@ class DeleteRuleForm(forms.ModelForm):
         model = DeleteRule
 
 DeleteRuleFormSet = inlineformset_factory(
-    Inbox, DeleteRule, extra=0, can_delete=True,
+    Inbox, DeleteRule, extra=1, can_delete=True,
     form=DeleteRuleForm
 )

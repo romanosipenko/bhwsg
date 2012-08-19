@@ -6,14 +6,14 @@
     EMAIL_HOST = '127.0.0.1'<br />
     EMAIL_HOST_USER = '{{ inbox.slug }}'<br />
     EMAIL_HOST_PASSWORD = '{{ inbox.password }}'<br />
-    EMAIL_PORT = 2525
+    EMAIL_PORT = 1025
   </p>
   <p>Settings:</p>
-  <ul>
+  <ol>
     {% for settings in inbox.settings.all %}
       <li>{{ settings.get_correct_rule.detail }}</li>
     {% endfor %}
-  </ul>
+  </ol>
   <p>Forward:</p>
   <form action="{% url inbox-forward-rule-create inbox.slug %}" method="post">{% csrf_token %}
     {{ forward_formset.as_table }}
@@ -23,7 +23,7 @@
   <ul>
     {% for mail in inbox.mails.all %}
       <li>{{ mail.subject }} - {{ mail.to_email }}<br />
-        {{ mail.get_html|safe }}
+        {{ mail.get_html|safe|truncatechars:200 }}
       </li>
     {% endfor %}
   </ul>
