@@ -13,11 +13,10 @@ def inbox_create(request):
             inbox = form.save()
             inbox.users.add(request.user)
             return redirect('home')
-    else:
-        context = {
-            'inbox_form': form,
-        }
-        return render(request, 'core/home.html', context)
+    context = {
+        'inbox_form': form,
+    }
+    return render(request, 'core/home.html', context)
 
 
 @login_required
