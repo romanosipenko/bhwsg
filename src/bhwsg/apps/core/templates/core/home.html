@@ -12,7 +12,11 @@
     {% if user.inboxes.exists %}
       <ul>
         {% for inbox in user.inboxes.all %}
-          <li><a href="{{ inbox.get_absolute_url }}">{{ inbox.title }}</a> (<a href="{% url inbox-team-remove-me inbox.slug %}">Leave</a>)</li>
+          <li><a href="{{ inbox.get_absolute_url }}">{{ inbox.title }}</a> (<a href="{% url inbox-team-remove-me inbox.slug %}">Leave</a>)
+            {% if inbox.owner == request.user %}
+              (<a href="{% url inbox-delete inbox.slug %}">Delete</a>)
+            {% endif %}
+          </li>
         {% endfor %}
       </ul>
     {% endif %}

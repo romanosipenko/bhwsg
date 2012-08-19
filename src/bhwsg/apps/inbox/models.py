@@ -38,7 +38,6 @@ class InboxManager(models.Manager):
             inbox.unreaded_mails = len(filter(lambda x: x == inbox.id, unreaded_letters))
             yield inbox
 
-
     def get_inbox(self, user, **kwargs):
         queryset = self.get_query_set().filter(users=user).prefetch_related('users')
         return get_object_or_None(queryset, **kwargs)

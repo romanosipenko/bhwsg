@@ -114,3 +114,11 @@ def inbox_team_remove_me(request, slug):
     if not inbox.users.exists():
         inbox.delete()
     return redirect('home')
+
+
+@login_required
+def inbox_delete(request, slug):
+    inbox = get_object_or_404(Inbox, slug=slug)
+    if request.user == inbox.owner:
+        inbox.delete()
+    return redirect('home')
