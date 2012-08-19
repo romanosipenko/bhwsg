@@ -16,8 +16,8 @@ class InboxList(JsonView):
                 'title': inbox.title,
                 'label': inbox.label,
                 'slug': inbox.slug,
-                'mails_count': inbox.mails.count(),
-                'mails_unreaded_count': inbox.unreaded_mails,
+                'count': inbox.mails.count(),
+                'unread': inbox.unreaded_mails,
                 'users': list(inbox.users.values_list('id', flat=True)),
             })
         return {'inboxes': response}
@@ -53,7 +53,7 @@ class MailView(JsonView):
     def prepare_context(self, request, *args, **kwargs):
         params = request.GET
         mail = request.mail
-        
+
         data = {'result': True}
         if 'mark_readed' in params:
             mail.readers.add(request.user)
@@ -75,10 +75,10 @@ class MailView(JsonView):
                     'date': mail.date.strftime('%Y-%m-%d %H:%M:%S'),
                     'attachments': [attchmnt.file.url for attchmnt in mail.attachments.all()]
                 })
-        
+
         return data
-            
-    
+
+
 
 @login_required
 def inbox_create(request):

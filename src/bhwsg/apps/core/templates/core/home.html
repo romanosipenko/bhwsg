@@ -32,14 +32,16 @@
 {% block jstemplates %}
 <script type="text/template" id="template-inbox-list">
   [[#inboxes]]
-  <li class="active">
+  <li[[#active]] class="active"[[/active]]>
     <a href="#p2">
       [[title]]
       [[#slug]]
         <span class="label">[[slug]]</span>
       [[/slug]]
     </a>
+    [[#unread]]
     <span class="unread">4</span>
+    [[/unread]]
   </li>
   [[/inboxes]]
 </script>
