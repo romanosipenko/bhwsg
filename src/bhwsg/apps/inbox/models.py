@@ -18,6 +18,7 @@ from core.parsers import MailParser, TEXT_PLAIN_CONTENT_TYPE,\
 logger = logging.getLogger('inbox')
 
 
+
 class Inbox(models.Model):
     title = models.CharField(max_length=50)
     label = models.CharField(max_length=10, blank=True, null=True)
@@ -51,6 +52,13 @@ class Inbox(models.Model):
     def login(self):
         return self.slug
 
+    def get_mails(self, user):
+        """ Get inbox mails for current user """
+        
+        mails = self.mails.filter().order_by('-date')
+        mails = mails.prefetch_related('readers', '')
+        
+    
     def get_settings(self):
         """ Get inbox settings """
         return self.settings.all()

@@ -3,7 +3,10 @@ from django.contrib.auth import login, logout
 
 from forms import LoginForm
 from inbox.forms import InboxCreateForm
-
+from utils import json
+from django.http import Http404
+from django import http
+from django.views.generic.base import View
 
 def home(request):
     inbox_form = InboxCreateForm()
@@ -26,3 +29,60 @@ def login_user(request):
 def logout_user(request):
     logout(request)
     return redirect('home')
+
+
+class PermisionDenited(Exception):
+    pass
+
+
+class JsonView(View):
+    """
+        Base json protocol view.
+        Used for exchanging data between frontend and backend.
+    """
+    
+    def _prepare_response(self, request, *args, **kwargs):
+        context = {
+            'data': None,
+            'message': None,
+            'status': 200
+        }
+        
+        try:
+            # self.prepare_context must always return dict
+            self.context = dict(self.prepare_context(request, *args, **kwargs)) 
+        except Exception, e:
+            if isinstance(e, Http404):
+                context['status'] = 404
+            elif isinstance(e, PermisionDenited):
+                context['status'] = 401
+            else:
+                context['status'] = 500
+        
+        return self.render_to_response(context)        
+    
+    def post(self, request, *args, **kwargs):
+        return self._prepare_response(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        return self._prepare_response(request, *args, **kwargs)
+
+    def render_to_response(self, context):
+        "Returns a JSON response containing 'context' as payload"
+        return self.get_json_response(self.convert_context_to_json(context))
+
+    def get_json_response(self, content, **httpresponse_kwargs):
+        "Construct an `HttpResponse` object."
+        return http.HttpResponse(content,
+                                 content_type='application/json',
+                                 **httpresponse_kwargs)
+
+    def convert_context_to_json(self, context):
+        "Convert the context dictionary into a JSON object"
+        return json.dumps(context)
+ 
+    def prepare_context(self, request, *args, **kwargs):
+        """ Prepare there your ansver. Must returns dict """
+        return {}
+        
+        
