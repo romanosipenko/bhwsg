@@ -2,6 +2,7 @@ import os
 import logging
 import  fnmatch
 import re
+from annoying.functions import get_object_or_None
 from functools import partial
 from django.db import models
 from django.contrib.auth.models import User
@@ -21,6 +22,7 @@ logger = logging.getLogger('inbox')
 class InboxManager(models.Manager):
     def get_user_inboxes(self, user, q_filter=None, q_exclude=None):
         queryset = self.get_query_set().filter(users=user)
+
         if q_filter:
             queryset = queryset.filter(**q_filter)
         if q_exclude:
@@ -35,6 +37,11 @@ class InboxManager(models.Manager):
         for inbox in queryset:
             inbox.unreaded_mails = len(filter(lambda x: x == inbox.id, unreaded_letters))
             yield inbox
+            
+    
+    def get_inbox(self, user, **kwargs):
+        queryset = self.get_queryset().filter(users=user).prefetch_related('users')
+        return get_object_or_None(queryset, **kwargs)
 
 
 class Inbox(models.Model):
@@ -77,9 +84,6 @@ class Inbox(models.Model):
 
         mails = self.mails.filter().order_by('-date')
         mails = mails.prefetch_related('readers', '')
-
-    def get_unreaded_mails_count(self, user):
-        return self.mails.exclude(readers=user).count()
 
     def get_settings(self):
         """ Get inbox settings """
@@ -192,6 +196,10 @@ class MailManager(models.Manager):
             except Exception, e:
                 logger.error('Rule execution failed: %s' % e)
 
+    def get_inbox_mails(self, inbox, user):
+        queryset = self.get_query_set().filter(inbox=inbox)
+        queryset = queryset.prefetch_related('readers').order_by('-date')
+        return queryset
 
 
 class Mail(models.Model):
@@ -250,16 +258,13 @@ class Mail(models.Model):
 
     def get_attachments(self):
         return self.attachments.objects.all()
-
-    def readed(self):
-        return self.readers.all().exists()
-
-    def readed_by_all(self):
-        return self.readers.all() == self.inbox.users.all()
+    
+    def is_readed(self, user):
+        return True if self.readers.filter(id=user.id).count() else False
 
     @property
     def few_lines(self):
-        return striptags(truncatewords_html(self.message, 20))
+        return striptags(truncatewords_html(self.get_text(), 20))
 
 
 def get_attachment_upload_path(instance, name):

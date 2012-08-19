@@ -4,6 +4,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from models import Inbox
 from core.views import JsonView
 from forms import InboxCreateForm, ForwardRuleFormSet, UserCreateForm
+from inbox.decorators import inbox_required
+from inbox.models import Mail
 
 
 class InboxList(JsonView):
@@ -16,6 +18,31 @@ class InboxList(JsonView):
                 'users': list(inbox.users.values_list('id', flat=True)),
             })
         return {'inboxes': response}
+
+
+class InboxMailList(JsonView):
+    @inbox_required
+    def prepare_context(self, request, *args, **kwargs):
+        mails = Mail.objects.get_inbox_mails(request.inbox, request.user)
+        from_date = request.GET.get('from_date')
+        
+        if from_date:
+            mails = mails.filter(date__gt=from_date)
+        
+        count = request.GET.get('count', 50)
+        if count and count != 'all':
+            mails = mails[:count]
+            
+        prepare_mail_data = lambda mail: {
+            'subject': mail.subject,
+            'from_email': mail.from_email,
+            'to_email': mail.to_email,
+            'date': mail.date.strftime('%Y-%m-%d %H:%M:%S'),
+            'readed': mail.is_readed(request.user),
+            'few_lines': mail.few_lines
+        }
+                   
+        return {'mails': map(prepare_mail_data, mails)}
 
 
 @login_required

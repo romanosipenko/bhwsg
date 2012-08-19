@@ -59,6 +59,7 @@ class JsonView(View):
                 context['status'] = 401
             else:
                 context['status'] = 500
+                context['message'] = e.message
 
         return self.render_to_response(context)
 
