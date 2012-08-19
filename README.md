@@ -1,4 +1,12 @@
 # Black Hole With Small GAP #
+
+## About ##
+“Black Hole with Small Gap” (BHWSG) is SMTP server with web frontend, which is useful while your application is in development mode. SMTP server will catch all mails and will show them onto web UI, so that you can use real email addresses of real people and do not worry about boring those real people. You can debug mail content, improve HTML mail’s visual representation and make this in more natural way, using real emails, w/o chance that debug mail will be delivered to  real people.
+
+To make development process more fun, we are try to provide full amount of tools, which can be useful, when you develop your application: you are able to see all information, regarding mail, like headers, internal representation, html/text version and so on; using rich forwarding rules, you can configure BHWSG to deliver some of emails, your application sent, which can be useful in case you use traceback.me for exceptions or similar tools; privacy settings allow you to do not worry about sensetive information, present in your mails; attachment review feature allow you to work with mail attachemnts, just like you do this in your favorite mail client.
+
+We hope, that BHWSG will become one of your favorite development helper tool.
+
 ## Prerequisites ##
 
 - python >= 2.5
