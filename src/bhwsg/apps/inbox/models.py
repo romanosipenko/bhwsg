@@ -2,6 +2,7 @@ import os
 import logging
 import  fnmatch
 import re
+from annoying.functions import get_object_or_None
 from functools import partial
 from django.db import models
 from django.contrib.auth.models import User
@@ -14,28 +15,32 @@ from core.fields import JSONField
 from core.utils import memoize_method
 from core.parsers import MailParser, TEXT_PLAIN_CONTENT_TYPE,\
     TEXT_HTML_CONTENT_TYPE
-from django.db.models.aggregates import Count
 
 logger = logging.getLogger('inbox')
 
 
 class InboxManager(models.Manager):
     def get_user_inboxes(self, user, q_filter=None, q_exclude=None):
-        queryset = self.get_query_set().filter(models.Q(users=user) | models.Q(owner=user))
+        queryset = self.get_query_set().filter(users=user)
+
         if q_filter:
-            queryset = queryset.filter(**q_filter) 
+            queryset = queryset.filter(**q_filter)
         if q_exclude:
             queryset = queryset.exclude(**q_exclude)
-        
+
         unreaded_letters = list(
             Mail.objects.filter(inbox__in=queryset)\
             .exclude(readers=user)\
             .values_list('inbox', flat=True)
         )
-        
+
         for inbox in queryset:
-            inbox.unreaded_mails = len(filter(lambda x: x==inbox.id, unreaded_letters))
+            inbox.unreaded_mails = len(filter(lambda x: x == inbox.id, unreaded_letters))
             yield inbox
+
+    def get_inbox(self, user, **kwargs):
+        queryset = self.get_query_set().filter(users=user).prefetch_related('users')
+        return get_object_or_None(queryset, **kwargs)
 
 
 class Inbox(models.Model):
@@ -46,9 +51,9 @@ class Inbox(models.Model):
     password = models.CharField(max_length=255)
     users = models.ManyToManyField(User, related_name='inboxes')
     owner = models.ForeignKey(User, related_name='owned_inboxes', blank=True, null=True)
-    
+
     objects = InboxManager()
-    
+
     class Meta:
         ordering = ('slug',)
         unique_together = (('title', 'label'),)
@@ -75,13 +80,10 @@ class Inbox(models.Model):
 
     def get_mails(self, user):
         """ Get inbox mails for current user """
-        
+
         mails = self.mails.filter().order_by('-date')
         mails = mails.prefetch_related('readers', '')
-    
-    def get_unreaded_mails_count(self, user):
-        return self.mails.exclude(readers=user).count()
-    
+
     def get_settings(self):
         """ Get inbox settings """
         return self.settings.all()
@@ -193,6 +195,16 @@ class MailManager(models.Manager):
             except Exception, e:
                 logger.error('Rule execution failed: %s' % e)
 
+    def get_inbox_mails(self, inbox, user):
+        queryset = self.get_query_set().filter(inbox=inbox)
+        queryset = queryset.prefetch_related('readers').order_by('-date')
+        return queryset
+    
+    def get_mail(self, user, **kwargs):
+        queryset = self.get_query_set().filter(inbox__users=user)
+        queryset = queryset.prefetch_related('readers')
+        
+        return get_object_or_None(queryset, **kwargs)
 
 
 class Mail(models.Model):
@@ -244,28 +256,25 @@ class Mail(models.Model):
         pass
 
     def get_html(self):
-        return self.get_parser().get_text()
+        return self.get_parser().get_html()
 
     def get_text(self):
-        return self.get_parser().get_html()
+        return self.get_parser().get_text()
 
     def get_attachments(self):
         return self.attachments.objects.all()
 
-    def readed(self):
-        return self.readers.all().exists()
-
-    def readed_by_all(self):
-        return self.readers.all() == self.inbox.users.all()
+    def is_readed(self, user):
+        return True if self.readers.filter(id=user.id).count() else False
 
     @property
     def few_lines(self):
-        return striptags(truncatewords_html(self.message, 20))
+        return striptags(truncatewords_html(self.get_text(), 20))
 
 
 def get_attachment_upload_path(instance, name):
     name = name.encode('utf-8')
-    return os.path.join(settings.MEDIA_ROOT, 'attachments', str(instance.mail.id), name)
+    return os.path.join('attachments', str(instance.mail.id), name)
 
 
 class MailAttachment(models.Model):

@@ -154,6 +154,8 @@ ABSOLUTE_URL_OVERRIDES = {
     'auth.user': lambda o: "/",
 }
 
+LOGIN_URL = '/login/'
+
 
 try:
     from local_settings import *

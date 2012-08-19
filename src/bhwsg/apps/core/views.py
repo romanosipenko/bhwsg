@@ -1,14 +1,16 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
-
-from forms import LoginForm
-from inbox.forms import InboxCreateForm
-from utils import json
+from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django import http
 from django.views.generic.base import View
 
+from inbox.forms import InboxCreateForm
+from forms import LoginForm
+from utils import json
 
+
+@login_required
 def home(request):
     inbox_form = InboxCreateForm()
     context = {
@@ -59,6 +61,7 @@ class JsonView(View):
                 context['status'] = 401
             else:
                 context['status'] = 500
+                context['message'] = e.message
 
         return self.render_to_response(context)
 
