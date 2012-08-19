@@ -4,7 +4,7 @@
   <a href="{% url home %}">back</a>
   <p>You can use this settings for Django application:</p>
   <p>
-    EMAIL_HOST = '127.0.0.1'<br />
+    EMAIL_HOST = '{{ request.get_host }}'<br />
     EMAIL_HOST_USER = '{{ inbox.slug }}'<br />
     EMAIL_HOST_PASSWORD = '{{ inbox.password }}'<br />
     EMAIL_PORT = 1025
@@ -20,10 +20,12 @@
     {{ user_form.as_p }}
     <input type="submit" value="add">
   </form><br />
+  {% comment %}
   <p><a href="{% url inbox-leave inbox.slug %}">Leave inbox</a></p>
   {% if inbox.owner == user %}
     <p><a href="{% url inbox-delete inbox.slug %}">Delete inbox</a> (You are owner)</p>
   {% else %}
     <p>Only owner can delete inbox.</p>
   {% endif %}
+  {% endcomment %}
 {% endblock content %}

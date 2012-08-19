@@ -11,7 +11,7 @@ from inbox.models import Mail
 
 class InboxList(JsonView):
     """ Returns inboxes in json format. """
-    
+
     def prepare_context(self, request, *args, **kwargs):
         response = list()
         for inbox in Inbox.objects.get_user_inboxes(request.user):
@@ -20,6 +20,7 @@ class InboxList(JsonView):
                 'label': inbox.label,
                 'slug': inbox.slug,
                 'url': reverse('inbox-mail-list', args=(inbox.slug,)),
+                'config': reverse('inbox-mails-list', args=(inbox.slug,)),
                 'count': inbox.mails.count(),
                 'unread': inbox.unreaded_mails,
                 'users': list(inbox.users.values_list('id', flat=True)),
@@ -40,7 +41,7 @@ class InboxList(JsonView):
 
 class InboxMailList(JsonView):
     """ Returns mails for inbox or for all inboxes in json format. """
-    
+
     @check_inbox
     def prepare_context(self, request, *args, **kwargs):
         if request.inbox:
@@ -52,7 +53,7 @@ class InboxMailList(JsonView):
         from_date = request.GET.get('from_date')
         if from_date:
             mails = mails.filter(date__gt=from_date)
-            
+
         count = request.GET.get('count', 50)
         if count and count != 'all':
             mails = mails[:count]
@@ -72,14 +73,14 @@ class InboxMailList(JsonView):
 
 class MailView(JsonView):
     """ Returns mail in json format, marks mail as read, deletes mail.  """
-    
+
     @mail_required
     def prepare_context(self, request, *args, **kwargs):
         params = request.GET
         mail = request.mail
 
         data = {'result': True}
-        # Mark read command 
+        # Mark read command
         if 'mark_readed' in params:
             mail.readers.add(request.user)
         # Delete command
@@ -92,6 +93,11 @@ class MailView(JsonView):
                 data['raw'] = mail.raw
             else:
                 # Return normal mail
+                attachments = [
+                    {'name':attchmnt.file.name.split('/')[-1],
+                     'url':attchmnt.file.url
+                    } for attchmnt in mail.attachments.all()
+                ]
                 data.update({
                     'plain': mail.has_text() and mail.get_text() or None,
                     'html': mail.has_html() and mail.get_html() or None,
@@ -101,7 +107,7 @@ class MailView(JsonView):
                     'cc': mail.cc,
                     'subject': mail.subject,
                     'date': mail.date.strftime('%Y-%m-%d %H:%M:%S'),
-                    'attachments': [attchmnt.file.url for attchmnt in mail.attachments.all()]
+                    'attachments': attachments
                 })
 
         return data
