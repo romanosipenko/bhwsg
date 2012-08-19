@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+  <a href="{% url home %}">back</a>
   <p>Create new inbox:</p>
   <form action="{% url inbox-create %}" method="POST">{% csrf_token %}
     {{ inbox_form.as_p }}
