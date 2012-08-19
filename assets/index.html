@@ -142,6 +142,7 @@ jQuery.fn.draggit = function (el) {
 
 
     thisdiv.bind('mousedown', function(e){
+    	$("*").addClass("noselect");
         var pos = $(el).offset();
         var srcX = pos.left;
         var srcY = pos.top;
@@ -182,6 +183,7 @@ jQuery.fn.draggit = function (el) {
     });
 
     $(window).bind('mouseup', function(e){
+    	$("*").removeClass("noselect");
         ismousedown = false;
     });
 

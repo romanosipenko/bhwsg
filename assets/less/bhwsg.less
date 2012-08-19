@@ -9,31 +9,50 @@ ul {
 	list-style: none;
 }
 
-@primary-width: 5em;
+// Helpers
+
+.noselect {
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+@primary-height: 3em;
 @secondary-width: 20em;
-@secondary-left: @primary-width;
-@mail-left: @primary-width + @secondary-width;
+@mail-left: @secondary-width;
 
 // Layout
-#primary, #secondary, #mail {
+#secondary, #mail {
 	position: absolute;
-	top: 0;
+	top: @primary-height;
 	bottom: 0;
 }
 
 #primary {
-	background: #ddd;
+	background: #444;
+	top: 0;
 	left: 0;
-	width: @primary-width;
+	width: 100%;
+	height: @primary-height;
+	z-index: 5;
 
-	li.active {
-		background: #fafafa;
+	li {
+		float: left;
+		height: @primary-height;
+		line-height: @primary-height;
+
+		&.active {
+			background: #fafafa;
+		}
 	}
 }
 
 #secondary {
 	background: #fafafa;
-	left: @secondary-left;
+	left: 0;
 	width: @secondary-width;
 	border-right: 1px solid #aaa;
 	z-index: 2;
