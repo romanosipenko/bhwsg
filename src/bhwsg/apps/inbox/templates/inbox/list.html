@@ -2,39 +2,28 @@
 
 {% block content %}
   <a href="{% url home %}">back</a>
+  <p>You can use this settings for Django application:</p>
   <p>
     EMAIL_HOST = '127.0.0.1'<br />
     EMAIL_HOST_USER = '{{ inbox.slug }}'<br />
     EMAIL_HOST_PASSWORD = '{{ inbox.password }}'<br />
     EMAIL_PORT = 1025
-  </p>
-  <p>Team:</p>
+  </p><br />
+  <p>Full team:</p>
   <ul>
     {% for member in inbox.users.all %}
       <li>{{ member.email }}</li>
     {% endfor %}
-  </ul>
+  </ul><br />
+  <p>You can add team members here:</p>
   <form action="{% url inbox-team-add inbox.slug %}" method="post">{% csrf_token %}
     {{ user_form.as_p }}
     <input type="submit" value="add">
-  </form>
-  <p>Settings:</p>
-  <ol>
-    {% for settings in inbox.settings.all %}
-      <li>{{ settings.get_correct_rule.detail }}</li>
-    {% endfor %}
-  </ol>
-  <p>Forward:</p>
-  <form action="{% url inbox-forward-rule-create inbox.slug %}" method="post">{% csrf_token %}
-    {{ forward_formset.as_table }}
-    <input type="submit" value="hyak">
-  </form>
-  <p>Inbox for {{ inbox }}:</p>
-  <ul>
-    {% for mail in inbox.mails.all %}
-      <li>{{ mail.subject }} - {{ mail.to_email }}<br />
-        {{ mail.get_text|safe|truncatechars:200 }}
-      </li>
-    {% endfor %}
-  </ul>
+  </form><br />
+  <p><a href="{% url inbox-leave inbox.slug %}">Leave inbox</a></p>
+  {% if inbox.owner == user %}
+    <p><a href="{% url inbox-delete inbox.slug %}">Delete inbox</a> (You are owner)</p>
+  {% else %}
+    <p>Only owner can delete inbox.</p>
+  {% endif %}
 {% endblock content %}

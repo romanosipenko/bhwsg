@@ -96,6 +96,15 @@ class MailView(JsonView):
 
 
 @login_required
+def inbox_settings(request):
+    inbox_form = InboxCreateForm()
+    context = {
+        'inbox_form': inbox_form
+    }
+    return render(request, 'inbox/settings.html', context)
+
+
+@login_required
 def inbox_create(request):
     form = InboxCreateForm(request.POST or None, owner=request.user)
     if request.method == "POST":
@@ -154,7 +163,7 @@ def inbox_team_add(request, slug):
 
 
 @login_required
-def inbox_team_remove_me(request, slug):
+def inbox_leave(request, slug):
     inbox = get_object_or_404(Inbox, slug=slug)
     if request.user in inbox.users.all():
         inbox.users.remove(request.user)
