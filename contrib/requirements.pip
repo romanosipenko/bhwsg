@@ -2,5 +2,5 @@ django>=1.4
 psycopg2
 south
 django-annoying
-django-celery>=2.4.2,<=3.0.4
-celery>=2.4.6,<=3.0.4
+django-celery
+celery

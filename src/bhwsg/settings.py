@@ -10,7 +10,10 @@ sys.path.insert(0, os.path.join(PROJECT_PATH, 'bhwsg', 'apps'))
 BHWSG_SMTP_SERVER = "127.0.0.1"
 BHWSG_SMTP_PORT = 1025
 
+#CELERY_TASK_SERIALIZER = "json"
+
 # Example of django-celery settings
+#BROKER_URL = 'redis://localhost:6379/0'
 # BROKER_HOST = "localhost"
 # BROKER_PORT = 5672
 # BROKER_USER = "guest"

@@ -11,7 +11,6 @@ import asynchat
 import errno
 from annoying.functions import get_object_or_None
 
-from tasks import handle_mail
 from inbox.models import Inbox
 
 __version__ = 'BHWSGSMTP proxy version 0.1'
@@ -62,7 +61,8 @@ class BHWSGSMTPServer(smtpd.SMTPServer):
                 'inbox': self.credential_validator.inbox
             }
             # Save mail to db in celery task
-            handle_mail.delay(mail_dict)
+            from core.tasks import handle_mail
+            print handle_mail.delay(mail_dict)
             
     
     def handle_accept(self):
