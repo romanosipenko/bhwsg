@@ -14,9 +14,28 @@ from core.fields import JSONField
 from core.utils import memoize_method
 from core.parsers import MailParser, TEXT_PLAIN_CONTENT_TYPE,\
     TEXT_HTML_CONTENT_TYPE
+from django.db.models.aggregates import Count
 
 logger = logging.getLogger('inbox')
 
+
+class InboxManager(models.Manager):
+    def get_user_inboxes(self, user, q_filter=None, q_exclude=None):
+        queryset = self.get_query_set().filter(models.Q(users=user) | models.Q(owner=user))
+        if q_filter:
+            queryset = queryset.filter(**q_filter) 
+        if q_exclude:
+            queryset = queryset.exclude(**q_exclude)
+        
+        unreaded_letters = list(
+            Mail.objects.filter(inbox__in=queryset)\
+            .exclude(readers=user)\
+            .values_list('inbox', flat=True)
+        )
+        
+        for inbox in queryset:
+            inbox.unreaded_mails = len(filter(lambda x: x==inbox.id, unreaded_letters))
+            yield inbox
 
 
 class Inbox(models.Model):
@@ -27,7 +46,9 @@ class Inbox(models.Model):
     password = models.CharField(max_length=255)
     users = models.ManyToManyField(User, related_name='inboxes')
     owner = models.ForeignKey(User, related_name='owned_inboxes', blank=True, null=True)
-
+    
+    objects = InboxManager()
+    
     class Meta:
         ordering = ('slug',)
         unique_together = (('title', 'label'),)
@@ -57,7 +78,9 @@ class Inbox(models.Model):
         
         mails = self.mails.filter().order_by('-date')
         mails = mails.prefetch_related('readers', '')
-        
+    
+    def get_unreaded_mails_count(self, user):
+        return self.mails.exclude(readers=user).count()
     
     def get_settings(self):
         """ Get inbox settings """
