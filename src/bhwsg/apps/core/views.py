@@ -8,6 +8,7 @@ from django.http import Http404
 from django import http
 from django.views.generic.base import View
 
+
 def home(request):
     inbox_form = InboxCreateForm()
     context = {
@@ -40,17 +41,17 @@ class JsonView(View):
         Base json protocol view.
         Used for exchanging data between frontend and backend.
     """
-    
+
     def _prepare_response(self, request, *args, **kwargs):
         context = {
             'data': None,
             'message': None,
-            'status': 200
+            'status': 200,
         }
-        
+
         try:
             # self.prepare_context must always return dict
-            self.context = dict(self.prepare_context(request, *args, **kwargs)) 
+            context['data'] = dict(self.prepare_context(request, *args, **kwargs))
         except Exception, e:
             if isinstance(e, Http404):
                 context['status'] = 404
@@ -58,9 +59,9 @@ class JsonView(View):
                 context['status'] = 401
             else:
                 context['status'] = 500
-        
-        return self.render_to_response(context)        
-    
+
+        return self.render_to_response(context)
+
     def post(self, request, *args, **kwargs):
         return self._prepare_response(request, *args, **kwargs)
 
@@ -80,9 +81,7 @@ class JsonView(View):
     def convert_context_to_json(self, context):
         "Convert the context dictionary into a JSON object"
         return json.dumps(context)
- 
+
     def prepare_context(self, request, *args, **kwargs):
         """ Prepare there your ansver. Must returns dict """
         return {}
-        
-        

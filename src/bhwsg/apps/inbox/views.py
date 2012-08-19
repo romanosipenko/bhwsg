@@ -2,7 +2,14 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 
 from models import Inbox
+from core.views import JsonView
 from forms import InboxCreateForm, ForwardRuleFormSet, UserCreateForm
+
+
+class InboxList(JsonView):
+    def prepare_context(self, request, *args, **kwargs):
+        """ Prepare there your ansver. Must returns dict """
+        return {'inboxes': list(request.user.inboxes.values('title', 'slug', 'users'))}
 
 
 @login_required
