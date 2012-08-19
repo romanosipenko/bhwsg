@@ -1,6 +1,6 @@
 import os
 import logging
-import  fnmatch
+import fnmatch
 import re
 from core.utils import get_object_or_None
 from functools import partial
@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify, striptags, truncatewords_html
 from django.core.files.base import ContentFile
 from django.core.mail import send_mail
+from django.utils.encoding import smart_unicode
 
 from core.fields import JSONField
 from core.utils import memoize_method
@@ -279,7 +280,7 @@ class Mail(models.Model):
 
     @property
     def few_lines(self):
-        return striptags(truncatewords_html(self.get_text(), 20))
+        return striptags(truncatewords_html(self.get_text().encode('utf8'), 20))
 
 
 def get_attachment_upload_path(instance, name):
