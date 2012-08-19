@@ -15,5 +15,4 @@ def handle_mail(mail_dict):
     inbox = get_object_or_None(Inbox, slug=mail_dict.pop('inbox'))
 
     if inbox:
-        Mail.objects.new_mail(inbox, mail_dict)    
-
+        Mail.objects.new_mail(inbox, mail_dict)

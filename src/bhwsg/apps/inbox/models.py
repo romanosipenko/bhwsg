@@ -193,14 +193,14 @@ class MailManager(models.Manager):
                 settings.get_correct_rule().apply(mail)
             except Exception, e:
                 logger.error('Rule execution failed: %s' % e)
-    
+
     def _prefetch(self, queryset):
         return queryset.prefetch_related('readers').order_by('-date')
-    
+
     def get_user_mails(self, user):
         queryset = self.get_query_set().filter(inbox__users=user)
         return self._prefetch(queryset)
-    
+
     def get_inbox_mails(self, inbox):
         queryset = self.get_query_set().filter(inbox=inbox)
         return self._prefetch(queryset)
@@ -240,16 +240,15 @@ class Mail(models.Model):
 
     def __unicode__(self):
         return u'Mail for %s' % self.inbox
-    
+
     @property
     def from_email_pretty(self):
         mail = re.search('[a-zA-Z0-9+_\-\.]+@[0-9a-zA-Z][.-0-9a-zA-Z]*.[a-zA-Z]+', self.from_email)
         if mail:
             mail = mail.group()
-        
+
         return mail
 
-    
     @memoize_method
     def get_parser(self):
         """ Returns object that has access to different parts of mail """
