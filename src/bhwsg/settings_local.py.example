@@ -1,7 +1,4 @@
 # Local settings for bhwsg project.
-LOCAL_SETTINGS = True
-from settings import *
-
 DEBUG = True
 
 DATABASES = {
@@ -21,3 +18,11 @@ SECRET_KEY = ''
 if DEBUG:
     # Show emails in the console during developement.
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Example of django-celery settings
+# BROKER_URL = 'redis://localhost:6379/0'
+# BROKER_HOST = "localhost"
+# BROKER_PORT = 5672
+# BROKER_USER = "guest"
+# BROKER_PASSWORD = "guest"
+# BROKER_VHOST = "/"

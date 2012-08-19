@@ -22,12 +22,12 @@ If you're not using virtualenv or virtualenvwrapper you may skip this step.
 
 #### For virtualenvwrapper ####
 ```bash
-mkvirtualenv --no-site-packages bhwsg-env
+mkvirtualenv bhwsg-env
 ```
 
 #### For virtualenv ####
 ```bash
-virtualenv --no-site-packages bhwsg-env
+virtualenv bhwsg-env
 cd bhwsg-env
 source bin/activate
 ```
@@ -42,23 +42,30 @@ git clone https://github.com/romanosipenko/bhwsg.git bhwsg
 ### Install requirements ###
 ```bash
 cd bhwsg
-pip install -r requirements.txt
+pip install -r contrib/requirements.pip
 ```
 
 ### Configure project ###
 ```bash
-cp bhwsg/__local_settings.py bhwsg/local_settings.py
-vi bhwsg/local_settings.py
+cp src/bhwsg/settings_local.py.example src/bhwsg/settings_local.py
+vi src/bhwsg/settings_local.py
 ```
 
 ### Sync database ###
 ```bash
+cd src
 python manage.py syncdb
+python manage.py migrate
+```
+
+### Setup and run celery ###
+```bash
+cd src
+python manage.py celeryd
 ```
 
 ## Running ##
 ```bash
 python manage.py runserver
 ```
-
 Open browser to http://127.0.0.1:8000

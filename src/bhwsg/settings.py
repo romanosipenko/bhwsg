@@ -15,14 +15,6 @@ BHWSG_SMTP_PORT = 1025
 
 #CELERY_TASK_SERIALIZER = "json"
 
-# Example of django-celery settings
-#BROKER_URL = 'redis://localhost:6379/0'
-# BROKER_HOST = "localhost"
-# BROKER_PORT = 5672
-# BROKER_USER = "guest"
-# BROKER_PASSWORD = "guest"
-# BROKER_VHOST = "/"
-
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
@@ -151,11 +143,6 @@ ABSOLUTE_URL_OVERRIDES = {
 
 LOGIN_URL = '/login/'
 
-
-try:
-    from local_settings import *
-except ImportError:
-    pass
 
 try:
     from settings_local import *
