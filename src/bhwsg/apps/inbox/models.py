@@ -193,15 +193,20 @@ class MailManager(models.Manager):
                 settings.get_correct_rule().apply(mail)
             except Exception, e:
                 logger.error('Rule execution failed: %s' % e)
-
-    def get_inbox_mails(self, inbox, user):
+    
+    def _prefetch(self, queryset):
+        return queryset.prefetch_related('readers').order_by('-date')
+    
+    def get_user_mails(self, user):
+        queryset = self.get_query_set().filter(inbox__users=user)
+        return self._prefetch(queryset)
+    
+    def get_inbox_mails(self, inbox):
         queryset = self.get_query_set().filter(inbox=inbox)
-        queryset = queryset.prefetch_related('readers').order_by('-date')
-        return queryset
+        return self._prefetch(queryset)
 
     def get_mail(self, user, **kwargs):
-        queryset = self.get_query_set().filter(inbox__users=user)
-        queryset = queryset.prefetch_related('readers')
+        queryset = self.get_user_mails().prefetch_related('readers')
 
         return get_object_or_None(queryset, **kwargs)
 

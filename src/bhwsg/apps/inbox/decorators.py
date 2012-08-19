@@ -3,16 +3,17 @@ from core.views import PermisionDenited
 from inbox.models import Inbox, Mail
 
 
-def inbox_required(func):
+def check_inbox(func):
     def _check_inbox(self, request, *args, **kwargs):
-        if not kwargs.get('slug'):
-            raise Http404
         if not request.user.is_authenticated():
             raise PermisionDenited
-
-        inbox = Inbox.objects.get_inbox(user=request.user, slug=kwargs['slug'])
-        if not inbox:
-            raise Http404
+        
+        if kwargs.get('slug'):
+            inbox = Inbox.objects.get_inbox(user=request.user, slug=kwargs['slug'])
+            if not inbox:
+                raise Http404
+        else:
+            inbox = None
 
         request.inbox = inbox
 
