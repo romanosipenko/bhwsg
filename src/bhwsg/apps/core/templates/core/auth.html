@@ -3,9 +3,9 @@
 {% block content %}
   <form action="{% url auth_login %}" method="post">{% csrf_token %}
     username:
-    <input type="text" name="username" value="{{ username }}" /><br />
+    <input type="text" name="username" placeholder="username/email" /><br />
     password:
-    <input type="password" name="password" value="" /><br />
+    <input type="password" name="password" /><br />
     <input type="submit" value="Log In" />
   </form>
 {% endblock content %}

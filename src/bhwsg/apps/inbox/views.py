@@ -2,7 +2,8 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 
 from models import Inbox
-from forms import InboxCreateForm, ForwardRuleFormSet
+from forms import InboxCreateForm, ForwardRuleFormSet, UserCreateForm
+# from core.utils import generate_username
 
 
 @login_required
@@ -23,10 +24,10 @@ def inbox_create(request):
 @login_required
 def inbox_mails_list(request, slug):
     inbox = get_object_or_404(Inbox, slug=slug)
-    forward_formset = ForwardRuleFormSet(instance=inbox, prefix='forward_rule')
     context = {
         "inbox": inbox,
-        "forward_formset": forward_formset,
+        "user_form": UserCreateForm(),
+        "forward_formset": ForwardRuleFormSet(instance=inbox, prefix='forward_rule'),
     }
     return render(request, 'inbox/list.html', context)
 
@@ -41,6 +42,24 @@ def inbox_forward_rule_create(request, slug):
         return redirect('inbox-mails-list', inbox.slug)
     context = {
         "inbox": inbox,
+        "user_form": UserCreateForm(),
         "forward_formset": formset,
     }
+    return render(request, 'inbox/list.html', context)
+
+
+@login_required
+def inbox_team_add(request, slug):
+    inbox = get_object_or_404(Inbox, slug=slug)
+    user_form = UserCreateForm(request.POST or None)
+    if request.method == "POST" and user_form.is_valid():
+        member = user_form.save()
+        inbox.users.add(member)
+        return redirect('inbox-mails-list', inbox.slug)
+    context = {
+        "inbox": inbox,
+        "user_form": user_form,
+    }
+    forward_formset = ForwardRuleFormSet(instance=inbox, prefix='forward_rule')
+    context.update({"forward_formset": forward_formset, })
     return render(request, 'inbox/list.html', context)

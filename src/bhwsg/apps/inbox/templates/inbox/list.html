@@ -8,6 +8,16 @@
     EMAIL_HOST_PASSWORD = '{{ inbox.password }}'<br />
     EMAIL_PORT = 1025
   </p>
+  <p>Team:</p>
+  <ul>
+    {% for member in inbox.users.all %}
+      <li>{{ member.email }}</li>
+    {% endfor %}
+  </ul>
+  <form action="{% url inbox-team-add inbox.slug %}" method="post">{% csrf_token %}
+    {{ user_form.as_p }}
+    <input type="submit" value="add">
+  </form>
   <p>Settings:</p>
   <ol>
     {% for settings in inbox.settings.all %}
