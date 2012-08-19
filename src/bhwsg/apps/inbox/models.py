@@ -22,14 +22,14 @@ logger = logging.getLogger('inbox')
 class InboxManager(models.Manager):
     def get_user_inboxes(self, user, q_filter=None, q_exclude=None):
         """ Get inboxes for given user. """
-        
+
         queryset = self.get_query_set().filter(users=user)
 
         if q_filter:
             queryset = queryset.filter(**q_filter)
         if q_exclude:
             queryset = queryset.exclude(**q_exclude)
-        
+
         # Get unread records
         unreaded_letters = list(
             Mail.objects.filter(inbox__in=queryset)\
@@ -280,15 +280,15 @@ class Mail(models.Model):
 
     @property
     def few_lines(self):
-        return striptags(truncatewords_html(self.get_text().encode('utf8'), 20))
+        return striptags(truncatewords_html(self.get_text().decode('utf8'), 20))
 
 
 def get_attachment_upload_path(instance, name):
     try:
         name = name.encode('utf-8')
-    except Exception, e:
+    except Exception:
         pass
-    
+
     return os.path.join('attachments', str(instance.mail.id), name)
 
 
