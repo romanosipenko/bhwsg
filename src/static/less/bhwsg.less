@@ -58,10 +58,9 @@ ul {
 	li {
 		float: left;
 		margin-right: .5em;
-		margin-top: .5em;
-		padding: .25em .5em;
+		padding: 0 .5em;
 		position: relative;
-		border-radius: .125em;
+		height: @primary-height;
 
 
 		.unread {
@@ -74,20 +73,21 @@ ul {
 			border-radius: 50%;
 			display: inline-block;
 			text-align: center;
-			top: -.25em;
-			left: -.25em;
+			right: -1.1em;
+			top: 1.2em;
 			opacity: .9;
+			z-index: 3;
 		}
 
 		&.active {
-			background: #fafafa;
+			background: rgba(255, 255, 255, .35);
 
 			a {
-				color: #444;
+				color: #eee;
 			}
 
 			.label {
-				color: #777;
+				color: #ccc;
 			}
 		}
 
@@ -95,6 +95,7 @@ ul {
 			color: #fff;
 			text-decoration: none;
 			position: relative;
+			top: .7em;
 
 			.label {
 				position: absolute;
@@ -437,7 +438,7 @@ ul {
 		line-height: 1;
 		border: 2px solid @main-color;
 		padding: .25em;
-		border-radius: .25em;
+		border-radius: .125em;
 		background: lighten(@main-color, 25%);
 	}
 }

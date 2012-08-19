@@ -189,6 +189,7 @@ var BHWSG = (function(){
                 BHWSG._fetch(this_.attr("data-url"), "mails", BHWSG.layout.secondary.find("ul"), BHWSG.highlightItemList);
                 // BHWSG.fetchMails(this_.attr("data-slug"));
             });
+            BHWSG.layout.primary.find("ul li:first-child a").click();
         }, // actionInbox
 
         _fetch: function(url, template, el, callback){
