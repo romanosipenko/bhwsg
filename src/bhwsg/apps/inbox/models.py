@@ -2,6 +2,7 @@ import os
 import logging
 import  fnmatch
 import re
+from functools import partial
 from django.db import models
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify, striptags, truncatewords_html
@@ -133,16 +134,25 @@ class MailManager(models.Manager):
         """
         parser = Mail.parser(raw_data['raw'])
         
+        raw_data.update({
+            'from_email': parser.get_from(),
+            'to_email': parser.get_to(),
+            'content_types': parser.get_content_types(),
+            'content_type': parser.get_content_type(),
+            'bcc': parser.get_bcc(),
+            'cc': parser.get_cc()
+        })
+        
         mail = self.create(
             inbox=inbox,
-            content_types=parser.get_content_types(),
             **raw_data
         )
         
+        attachment = partial(MailAttachment, mail=mail)
+         
         # Save attacments
         MailAttachment.objects.bulk_create(
-            [MailAttachment(mail=mail, file=ContentFile(ac, name=n))\
-                for n, ac in parser.get_attachements()]
+            [attachment(file=ContentFile(ac, n)) for n, ac in parser.get_attachments()]
         )
         # Apply rules          
         for settings in inbox.get_settings():
@@ -156,21 +166,18 @@ class MailManager(models.Manager):
 class Mail(models.Model):
     parser = MailParser
     
-    mail = models.ForeignKey()
-    file
     inbox = models.ForeignKey(Inbox, related_name="mails")
     readers = models.ManyToManyField(User, related_name="mails")
     peer = models.CharField(max_length=255, blank=True, null=True)
     from_email = models.CharField(max_length=255,
         help_text="The email address, and optionally the name of the author(s)")
-    to_email = models.TextField(
-        help_text="The email address(es), and optionally name(s) of the message's recipient(s).")
-    bcc = models.TextField(blank=True, null=True,
+    to_email = JSONField(
+        help_text="The email address(es), and optionally name(s) of the message's recipient(s)."
+    )
+    bcc = JSONField(blank=True, null=True,
         help_text="Blind Carbon Copy")
-    cc = models.TextField(blank=True, null=True,
+    cc = JSONField(blank=True, null=True,
         help_text="Carbon copy")
-    content_type = models.TextField(blank=True, null=True,
-        help_text="Information about how the message is to be displayed, usually a MIME type.")
     raw = models.TextField(blank=True, null=True)
     subject = models.TextField(max_length=255, blank=True, null=True,
         help_text="A brief summary of the topic of the message.")
@@ -185,11 +192,15 @@ class Mail(models.Model):
     
     def __unicode__(self):
         return u'Mail for %s' % self.inbox
-
     
     @memoize_method
-    def get_parser(self): 
+    def get_parser(self):
+        """ Returns object that has access to different parts of mail """
         return self.parser(self.raw)
+    
+    @property
+    def content_type(self):
+        return self.content_types and self.content_types[0] or None 
     
     def has_html(self):
         return TEXT_HTML_CONTENT_TYPE in self.content_types
@@ -207,7 +218,7 @@ class Mail(models.Model):
         return self.get_parser().get_html()
 
     def get_attachments(self):
-        pass
+        return self.attachments.objects.all()
 
     def readed(self):
         return self.readers.all().exists()
@@ -222,10 +233,9 @@ class Mail(models.Model):
 
 def get_attachment_upload_path(instance, name):
     name = name.encode('utf-8')
-    
-    return os.path.join(settings.MEDIA_ROOT, 'attachments', name)
+    return os.path.join(settings.MEDIA_ROOT, 'attachments', str(instance.mail.id), name)
      
 
 class MailAttachment(models.Model):
-    mail = models.ForeignKey(Mail)
+    mail = models.ForeignKey(Mail, related_name='attachments')
     file = models.FileField(upload_to=get_attachment_upload_path)

@@ -54,8 +54,8 @@ class BHWSGSMTPServer(smtpd.SMTPServer):
         if self.credential_validator.valid:
             mail_dict = {
                 'peer': peer,
-                'from_email': mailfrom,
-                'to_email': rcpttos,
+                #'from_email': mailfrom,
+                #'to_email': rcpttos,
                 'raw': data,
                 'uuid': str(uuid1()),
                 'date': datetime.datetime.now(),

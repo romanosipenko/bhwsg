@@ -28,6 +28,12 @@ class MailParser(object):
     def get_to(self):
         return self._mail['To'].strip().split(',')
     
+    def get_bcc(self):
+        return self._mail['BCC'] or self._mail['Bcc'] 
+    
+    def get_cc(self):
+        return self._mail['CC'] or self._mail['Cc']
+    
     def get_text(self):
         text_msgs = self._get_text_parts() or None
         
