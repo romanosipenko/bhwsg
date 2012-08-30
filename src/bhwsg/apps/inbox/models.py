@@ -12,7 +12,8 @@ from django.core.mail import send_mail
 
 from core.fields import JSONField
 from core.utils import memoize_method
-from core.parsers import MailParser, TEXT_PLAIN_CONTENT_TYPE,\
+
+from parsers import MailParser, TEXT_PLAIN_CONTENT_TYPE,\
     TEXT_HTML_CONTENT_TYPE
 
 logger = logging.getLogger('inbox')
@@ -280,6 +281,7 @@ class Mail(models.Model):
     @property
     def few_lines(self):
         return striptags(truncatewords_html(self.get_text().decode('utf8'), 20))
+
 
 
 def get_attachment_upload_path(instance, name):

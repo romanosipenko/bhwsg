@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from core.smtp import BHWSGSMTPServer
+from inbox.smtp import BHWSGSMTPServer
 
 from django.conf import settings
 import asyncore

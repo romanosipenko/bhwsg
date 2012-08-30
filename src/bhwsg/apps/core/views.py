@@ -10,30 +10,6 @@ from forms import LoginForm
 from utils import json
 
 
-@login_required
-def home(request):
-    inbox_form = InboxCreateForm()
-    context = {
-        'inbox_form': inbox_form
-    }
-    return render(request, 'core/home.html', context)
-
-
-def login_user(request):
-    form = LoginForm(request.POST or None)
-    if request.method == "POST" and form.is_valid():
-        user = form.authenticate()
-        if user is not None:
-            login(request, user)
-            return redirect('home')
-    return render(request, 'core/auth.html', {"form": form})
-
-
-def logout_user(request):
-    logout(request)
-    return redirect('home')
-
-
 class PermisionDenited(Exception):
     pass
 
@@ -57,7 +33,7 @@ class JsonView(View):
         except Exception, e:
             if isinstance(e, Http404):
                 context['status'] = 404
-            elif isinstance(e, PermisionDenited):
+            elif isinstance(e, PermisionDenited):   
                 context['status'] = 401
             else:
                 context['status'] = 500
@@ -88,3 +64,27 @@ class JsonView(View):
     def prepare_context(self, request, *args, **kwargs):
         """ Prepare there your ansver. Must returns dict """
         return {}
+
+
+@login_required
+def home(request):
+    inbox_form = InboxCreateForm()
+    context = {
+        'inbox_form': inbox_form
+    }
+    return render(request, 'core/home.html', context)
+
+
+def login_user(request):
+    form = LoginForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        user = form.authenticate()
+        if user is not None:
+            login(request, user)
+            return redirect('home')
+    return render(request, 'core/auth.html', {"form": form})
+
+
+def logout_user(request):
+    logout(request)
+    return redirect('home')
